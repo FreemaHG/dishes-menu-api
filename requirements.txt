@@ -1,0 +1,5 @@
+fastapi==0.109.0
+sqlalchemy==2.0.25
+asyncpg==0.29.0
+alembic==1.13.1
+greenlet==3.0.3

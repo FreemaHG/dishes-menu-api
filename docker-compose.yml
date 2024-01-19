@@ -1,0 +1,18 @@
+version: "3.11"
+
+services:
+
+    postgres:
+      image: postgres:15
+      container_name: db
+      command: -p 5432
+      expose:
+        - 5432
+      ports:
+        - 5432:5432
+      environment:
+        - POSTGRES_USER=${DB_USER:?err}
+        - POSTGRES_PASSWORD=${DB_PASS:?err}
+        - POSTGRES_DB=${DB_NAME:?err}
+      volumes:
+        - ./postgres_db/:/var/lib/postgresql/data
