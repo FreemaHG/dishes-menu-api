@@ -4,7 +4,7 @@ from sqlalchemy import ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
-from src.models.abc_menu import BaseABC
+from src.models.abc_model import BaseABC
 from src.models.dish import Dish
 
 
