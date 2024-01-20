@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey, Float, FLOAT
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database import Base
-from src.models.abc_menu import BaseABC
+from src.models.abc_model import BaseABC
 
 
 class Dish(BaseABC):

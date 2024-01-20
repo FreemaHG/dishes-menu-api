@@ -5,7 +5,7 @@ from alembic import context
 
 from src.config import DB_USER, DB_HOST, DB_PORT, DB_NAME, DB_PASS
 from src.database import Base, metadata
-from src.models.abc_menu import BaseABC
+from src.models.abc_model import BaseABC
 from src.models.menu import Menu
 from src.models.submenu import Submenu
 from src.models.dish import Dish
