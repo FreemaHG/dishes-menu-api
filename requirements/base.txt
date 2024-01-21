@@ -3,3 +3,5 @@ sqlalchemy==2.0.25
 asyncpg==0.29.0
 alembic==1.13.1
 greenlet==3.0.3
+python-dotenv==1.0.0
+uvicorn==0.26.0
