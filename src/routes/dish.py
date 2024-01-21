@@ -8,7 +8,7 @@ from loguru import logger
 
 from src.database import get_async_session
 from src.routes.abc_route import APIMenuRouter
-from src.schemas.dish import DishOutSchema, DishInSchema
+from src.schemas.dish import DishOutSchema, DishInSchema, DishInOptionalSchema
 from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
 from src.services.dish import DishService
 from src.services.submenu import SubmenuService
@@ -97,7 +97,7 @@ async def get_dish(
 )
 async def update_dish(
         dish_id: UUID,
-        data: DishInSchema,
+        data: DishInOptionalSchema,
         session: AsyncSession = Depends(get_async_session),
 ):
     """

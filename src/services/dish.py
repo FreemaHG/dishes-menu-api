@@ -74,11 +74,8 @@ class DishService:
         :param session: объект асинхронной сессии для запросов к БД
         :return: None
         """
-        query = update(Dish).where(Dish.id == dish_id).values(
-            title=data.title,
-            description=data.description,
-            price=data.price
-        )
+        # model_dump(exclude_unset=True) - распаковывает явно переданные поля в patch-запросе
+        query = update(Dish).where(Dish.id == dish_id).values(data.model_dump(exclude_unset=True))
         await session.execute(query)
         await session.commit()
 

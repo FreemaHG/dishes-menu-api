@@ -76,10 +76,8 @@ class MenuService:
         :param session: объект асинхронной сессии для запросов к БД
         :return: None
         """
-        query = update(Menu).where(Menu.id == menu_id).values(
-            title=data.title,
-            description=data.description,
-        )
+        # model_dump(exclude_unset=True) - распаковывает явно переданные поля в patch-запросе
+        query = update(Menu).where(Menu.id == menu_id).values(data.model_dump(exclude_unset=True))
         await session.execute(query)
         await session.commit()
 
