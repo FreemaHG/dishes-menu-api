@@ -1,10 +1,8 @@
 from http import HTTPStatus
 from typing import Union, List
 from uuid import UUID
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from loguru import logger
 
 from src.database import get_async_session
 from src.routes.abc_route import APIMenuRouter
@@ -22,11 +20,13 @@ router = APIMenuRouter(tags=["submenu"])
 @router.get(
     "/{menu_id}/submenus",
     response_model=List[SubmenuOutSchema],  # Схема ответа
-    responses={200: {"model": List[SubmenuOutSchema]}},  # Примеры схем ответов для документации
+    responses={
+        200: {"model": List[SubmenuOutSchema]}
+    },  # Примеры схем ответов для документации
 )
 async def get_submenus_list(
-        menu_id: UUID,
-        session: AsyncSession = Depends(get_async_session),
+    menu_id: UUID,
+    session: AsyncSession = Depends(get_async_session),
 ):
     """
     Вывод списка подменю
@@ -45,9 +45,9 @@ async def get_submenus_list(
     status_code=201,
 )
 async def create_submenu(
-        menu_id: UUID,
-        new_submenu: BaseInSchema,
-        session: AsyncSession = Depends(get_async_session),
+    menu_id: UUID,
+    new_submenu: BaseInSchema,
+    session: AsyncSession = Depends(get_async_session),
 ):
     """
     Добавление подменю
@@ -55,8 +55,14 @@ async def create_submenu(
     menu = await MenuService.get(menu_id=menu_id, session=session)
 
     if menu:
-        created_submenu = await SubmenuService.create(menu_id=menu_id, new_submenu=new_submenu, session=session)
-        return created_submenu
+        # Делаем два запроса, чтобы при первом создании подменю не было ошибки при выводе связанных данных
+        # (которых еще нет) из дочерних таблиц
+        submenu_id = await SubmenuService.create(
+            menu_id=menu_id, new_submenu=new_submenu, session=session
+        )
+        submenu = await SubmenuService.get(submenu_id=submenu_id, session=session)
+
+        return submenu
     else:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="menu not found"
@@ -72,8 +78,8 @@ async def create_submenu(
     },
 )
 async def get_submenu(
-        submenu_id: UUID,
-        session: AsyncSession = Depends(get_async_session),
+    submenu_id: UUID,
+    session: AsyncSession = Depends(get_async_session),
 ):
     """
     Вывод подменю по id
@@ -97,9 +103,9 @@ async def get_submenu(
     },
 )
 async def update_submenu(
-        submenu_id: UUID,
-        data: BaseInOptionalSchema,
-        session: AsyncSession = Depends(get_async_session),
+    submenu_id: UUID,
+    data: BaseInOptionalSchema,
+    session: AsyncSession = Depends(get_async_session),
 ):
     """
     Обновление подменю по id
@@ -124,8 +130,8 @@ async def update_submenu(
     },
 )
 async def delete_submenu(
-        submenu_id: UUID,
-        session: AsyncSession = Depends(get_async_session),
+    submenu_id: UUID,
+    session: AsyncSession = Depends(get_async_session),
 ):
     """
     Удаление подменю по id

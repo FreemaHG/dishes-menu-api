@@ -7,7 +7,9 @@ class CustomApiException(HTTPException):
     """
     Кастомная ошибка для быстрого вызова исключений
     """
+
     pass
+
 
 async def custom_api_exception_handler(request: Request, exc: HTTPException):
     """
@@ -15,8 +17,6 @@ async def custom_api_exception_handler(request: Request, exc: HTTPException):
     """
 
     return JSONResponse(
-        {
-            "detail": str(exc.detail)
-        },
+        {"detail": str(exc.detail)},
         status_code=exc.status_code,
     )

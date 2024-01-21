@@ -11,10 +11,13 @@ class Submenu(BaseABC):
     """
     Модель для хранения записей о подменю
     """
+
     __tablename__ = "submenu"
 
     menu_id: Mapped[int] = mapped_column(ForeignKey("menu.id"))
-    dishes: Mapped[List["Dish"]] = relationship(backref="submenu", cascade="all, delete")
+    dishes: Mapped[List["Dish"]] = relationship(
+        backref="submenu", cascade="all, delete"
+    )
 
     @hybrid_property
     def dishes_count(self) -> int:

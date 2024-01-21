@@ -14,7 +14,9 @@ class Menu(BaseABC):
 
     __tablename__ = "menu"
 
-    submenus: Mapped[List["Submenu"]] = relationship(backref="menu", cascade="all, delete")
+    submenus: Mapped[List["Submenu"]] = relationship(
+        backref="menu", cascade="all, delete"
+    )
 
     @hybrid_property
     def submenus_count(self) -> int:

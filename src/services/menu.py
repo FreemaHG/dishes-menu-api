@@ -1,8 +1,6 @@
 from typing import Union, List
 from uuid import UUID
-
-from loguru import logger
-from sqlalchemy import select, update
+from sqlalchemy import select, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -24,31 +22,30 @@ class MenuService:
         :return: список с объектами меню
         """
         # joinedload - связываем таблицы (join) для подсчета и вывода кол-во подменю и блюд
-        query = select(Menu).options(joinedload(Menu.submenus).options(joinedload(Submenu.dishes)))
+        query = select(Menu).options(
+            joinedload(Menu.submenus).options(joinedload(Submenu.dishes))
+        )
         res = await session.execute(query)
         menu_list = res.unique().scalars().all()
 
         return list(menu_list)
 
-
     @classmethod
-    async def create(cls, new_menu: BaseInSchema, session: AsyncSession) -> Menu:
+    async def create(cls, new_menu: BaseInSchema, session: AsyncSession) -> UUID:
         """
         Метод создает и возвращает новое меню
         :param new_menu: параметры для сохранения нового меню
         :param session: объект асинхронной сессии для запросов к БД
-        :return: объект нового меню
+        :return: UUID-id новой записи
         """
-        new_menu = Menu(
-            title=new_menu.title,
-            description=new_menu.description
+        query = insert(Menu).values(
+            title=new_menu.title, description=new_menu.description
         )
-
-        session.add(new_menu)
+        res = await session.execute(query)
         await session.commit()
 
-        return new_menu
-
+        # Возвращаем id новой записи
+        return res.inserted_primary_key[0]
 
     @classmethod
     async def get(cls, menu_id: UUID, session: AsyncSession) -> Union[Menu, None]:
@@ -59,16 +56,20 @@ class MenuService:
         :return: объект меню либо None
         """
         # joinedload - связываем таблицы (join) для подсчета и вывода кол-во подменю и блюд
-        query = select(Menu).options(joinedload(Menu.submenus).options(joinedload(Submenu.dishes))).\
-            where(Menu.id == menu_id)
+        query = (
+            select(Menu)
+            .options(joinedload(Menu.submenus).options(joinedload(Submenu.dishes)))
+            .where(Menu.id == menu_id)
+        )
         res = await session.execute(query)
         menu = res.unique().scalar_one_or_none()
 
         return menu
 
-
     @classmethod
-    async def update(cls, menu_id: UUID, data: BaseInSchema, session: AsyncSession) -> None:
+    async def update(
+        cls, menu_id: UUID, data: BaseInSchema, session: AsyncSession
+    ) -> None:
         """
         Метод обновляет меню по переданному id
         :param menu_id: id меню для поиска
@@ -77,10 +78,13 @@ class MenuService:
         :return: None
         """
         # model_dump(exclude_unset=True) - распаковывает явно переданные поля в patch-запросе
-        query = update(Menu).where(Menu.id == menu_id).values(data.model_dump(exclude_unset=True))
+        query = (
+            update(Menu)
+            .where(Menu.id == menu_id)
+            .values(data.model_dump(exclude_unset=True))
+        )
         await session.execute(query)
         await session.commit()
-
 
     @classmethod
     async def delete(cls, delete_menu: Menu, session: AsyncSession) -> None:

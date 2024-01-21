@@ -8,6 +8,7 @@ class Dish(BaseABC):
     """
     Модель для хранения записей о блюде
     """
+
     __tablename__ = "dish"
 
     price: Mapped[float] = mapped_column(Float(precision=2))

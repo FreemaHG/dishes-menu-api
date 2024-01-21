@@ -6,4 +6,5 @@ class MenuOutSchema(BaseOutSchema, SubmenusCountMixinSchema, DishesCountMixinSch
     """
     Схема для вывода меню
     """
+
     pass
