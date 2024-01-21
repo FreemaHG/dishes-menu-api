@@ -1,26 +1,11 @@
-from uuid import UUID
-
-from http import HTTPStatus
-from typing import Optional, List
-from pydantic import BaseModel, Field, field_validator, ConfigDict
+from src.schemas.base import BaseOutSchema
+from src.schemas.mixin import SubmenusCountMixinSchema, DishesCountMixinSchema
 
 
-class MenuInSchema(BaseModel):
-    """
-    Схема для добавления нового меню
-    """
-    title: str
-    description: str
-
-    # Автоматическое преобразование данных ORM-модели в объект схемы для сериализации
-    model_config = ConfigDict(from_attributes=True)
-
-
-class MenuOutSchema(MenuInSchema):
+# TODO Раскомментировать после вычисления подменю и блюд в меню!!!
+# class MenuOutSchema(BaseOutSchema, SubmenusCountMixinSchema, DishesCountMixinSchema):
+class MenuOutSchema(BaseOutSchema):
     """
     Схема для вывода меню
     """
-    id: UUID
-    # FIXME Реализовать позже!
-    # submenus_count: int
-    # dishes_count: int
+    pass
