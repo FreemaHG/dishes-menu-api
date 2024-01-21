@@ -2,7 +2,7 @@ from typing import Union, List
 from uuid import UUID
 
 from loguru import logger
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.menu import Menu
@@ -78,13 +78,13 @@ class MenuService:
 
 
     @classmethod
-    async def delete(cls, menu_id: UUID, session: AsyncSession) -> None:
+    async def delete(cls, delete_menu: Menu, session: AsyncSession) -> None:
         """
         Метод удаляет меню по переданному id
-        :param menu_id: id меню для поиска
+        :param delete_menu: объект меню для удаления
         :param session: объект асинхронной сессии для запросов к БД
         :return: None
         """
-        query = delete(Menu).where(Menu.id == menu_id)
-        await session.execute(query)
+        # Каскадное удаление связанных дочерних записей возможно только через session.delete()
+        await session.delete(delete_menu)
         await session.commit()

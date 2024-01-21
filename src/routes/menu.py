@@ -122,7 +122,7 @@ async def delete_menu(
     delete_menu = await MenuService.get(menu_id=menu_id, session=session)
 
     if delete_menu:
-        await MenuService.delete(menu_id=menu_id, session=session)
+        await MenuService.delete(delete_menu=delete_menu, session=session)
         return ResponseForDeleteSchema(message="The menu has been deleted")
     else:
         raise CustomApiException(
