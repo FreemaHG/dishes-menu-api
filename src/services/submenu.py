@@ -2,7 +2,7 @@ from typing import Union, List
 from uuid import UUID
 
 from loguru import logger
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.submenu import Submenu
@@ -82,13 +82,14 @@ class SubmenuService:
 
 
     @classmethod
-    async def delete(cls, submenu_id: UUID, session: AsyncSession) -> None:
+    async def delete(cls, delete_submenu: Submenu, session: AsyncSession) -> None:
         """
         Метод удаляет подменю по переданному id
-        :param submenu_id: id подменю для поиска
+        :param delete_submenu: объект подменю для удаления
         :param session: объект асинхронной сессии для запросов к БД
         :return: None
         """
-        query = delete(Submenu).where(Submenu.id == submenu_id)
-        await session.execute(query)
+        # Каскадное удаление связанных дочерних записей возможно только через session.delete(),
+        # а не через delete().where()
+        await session.delete(delete_submenu)
         await session.commit()

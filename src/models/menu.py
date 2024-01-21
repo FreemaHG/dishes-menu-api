@@ -12,7 +12,7 @@ class Menu(BaseABC):
 
     __tablename__ = "menu"
 
-    submenus: Mapped[List["Submenu"]] = relationship(backref="menu", cascade="all, delete-orphan")
+    submenus: Mapped[List["Submenu"]] = relationship(backref="menu", cascade="all, delete")
 
     # TODO Прописать метод для вывода кол-ва всех блюд в меню (либо вынести в сервисы?)
     # def submenus_count(self):

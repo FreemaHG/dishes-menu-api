@@ -130,10 +130,10 @@ async def delete_submenu(
     """
     Удаление подменю по id
     """
-    delete_menu = await SubmenuService.get(submenu_id=submenu_id, session=session)
+    delete_submenu = await SubmenuService.get(submenu_id=submenu_id, session=session)
 
-    if delete_menu:
-        await SubmenuService.delete(submenu_id=submenu_id, session=session)
+    if delete_submenu:
+        await SubmenuService.delete(delete_submenu=delete_submenu, session=session)
         return ResponseForDeleteSchema(message="The submenu has been deleted")
     else:
         raise CustomApiException(
