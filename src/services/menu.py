@@ -6,7 +6,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.menu import Menu
-from src.schemas.menu import MenuInSchema
+from src.schemas.base import BaseInSchema
 
 
 class MenuService:
@@ -28,7 +28,7 @@ class MenuService:
 
 
     @classmethod
-    async def create(cls, new_menu: MenuInSchema, session: AsyncSession) -> Menu:
+    async def create(cls, new_menu: BaseInSchema, session: AsyncSession) -> Menu:
         """
         Метод создает и возвращает новое меню
         :param new_menu: параметры для сохранения нового меню
@@ -61,13 +61,13 @@ class MenuService:
 
 
     @classmethod
-    async def update(cls, menu_id: UUID, data: MenuInSchema, session: AsyncSession) -> Union[Menu, None]:
+    async def update(cls, menu_id: UUID, data: BaseInSchema, session: AsyncSession) -> None:
         """
         Метод обновляет меню по переданному id
         :param menu_id: id меню для поиска
-        :param new_menu: параметры для сохранения нового меню
+        :param data: параметры для сохранения нового меню
         :param session: объект асинхронной сессии для запросов к БД
-        :return: обновленный объект меню либо None
+        :return: None
         """
         query = update(Menu).where(Menu.id == menu_id).values(
             title=data.title,
@@ -76,27 +76,15 @@ class MenuService:
         await session.execute(query)
         await session.commit()
 
-        updated_menu = await cls.get(menu_id=menu_id, session=session)
-
-        return updated_menu
-
 
     @classmethod
-    async def delete(cls, menu_id: UUID, session: AsyncSession) -> bool:
+    async def delete(cls, menu_id: UUID, session: AsyncSession) -> None:
         """
         Метод удаляет меню по переданному id
         :param menu_id: id меню для поиска
         :param session: объект асинхронной сессии для запросов к БД
-        :return: True - успешное удаление, иначе False
+        :return: None
         """
-        delete_menu = await cls.get(menu_id=menu_id, session=session)
-
-        if delete_menu:
-            query = delete(Menu).where(Menu.id == menu_id)
-            await session.execute(query)
-            await session.commit()
-
-            return True
-
-        else:
-            return False
+        query = delete(Menu).where(Menu.id == menu_id)
+        await session.execute(query)
+        await session.commit()
