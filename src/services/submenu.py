@@ -18,7 +18,7 @@ class SubmenuService:
     async def get_list(cls, menu_id: UUID, session: AsyncSession) -> List[Submenu]:
         """
         Метод возвращает список подменю
-        :menu_id session: id меню, к которому относится подменю
+        :param session: id меню, к которому относится подменю
         :param session: объект асинхронной сессии для запросов к БД
         :return: список с объектами подменю
         """
@@ -68,7 +68,7 @@ class SubmenuService:
     async def update(cls, submenu_id: UUID, data: BaseInSchema, session: AsyncSession) -> None:
         """
         Метод обновляет подменю по переданному id
-        :param submenu_id: id подменю для одновления
+        :param submenu_id: id подменю для обновления
         :param data: параметры для сохранения нового подменю
         :param session: объект асинхронной сессии для запросов к БД
         :return: None

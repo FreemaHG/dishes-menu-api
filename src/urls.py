@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from src.routes.menu import router as menu_router
 from src.routes.submenu import router as submenu_router
+from src.routes.dish import router as dish_router
 
 
 def register_routers(app: FastAPI) -> FastAPI:
@@ -10,5 +11,6 @@ def register_routers(app: FastAPI) -> FastAPI:
     """
     app.include_router(menu_router)
     app.include_router(submenu_router)
+    app.include_router(dish_router)
 
     return app
