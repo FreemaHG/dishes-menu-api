@@ -10,6 +10,10 @@ class DishInSchema(BaseInSchema):
     price: float
 
 
+# Схема для обновления блюда (patch-запрос, поля не обязательные)
+DishInOptionalSchema = DishInSchema.all_optional('DishInOptionalSchema')
+
+
 class DishOutSchema(BaseOutSchema):
     """
     Схема для вывода блюда

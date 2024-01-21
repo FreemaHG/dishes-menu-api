@@ -8,7 +8,7 @@ from loguru import logger
 
 from src.database import get_async_session
 from src.routes.abc_route import APIMenuRouter
-from src.schemas.base import BaseInSchema
+from src.schemas.base import BaseInSchema, BaseInOptionalSchema
 from src.schemas.submenu import SubmenuOutSchema
 from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
 from src.services.menu import MenuService
@@ -98,7 +98,7 @@ async def get_submenu(
 )
 async def update_submenu(
         submenu_id: UUID,
-        data: BaseInSchema,
+        data: BaseInOptionalSchema,
         session: AsyncSession = Depends(get_async_session),
 ):
     """
