@@ -1,7 +1,5 @@
 from typing import Union, List
 from uuid import UUID
-
-from loguru import logger
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,9 +26,10 @@ class DishService:
 
         return list(dishes_list)
 
-
     @classmethod
-    async def create(cls, submenu_id: UUID, new_dish: DishInSchema, session: AsyncSession) -> Union[Dish, False]:
+    async def create(
+        cls, submenu_id: UUID, new_dish: DishInSchema, session: AsyncSession
+    ) -> Union[Dish, False]:
         """
         Метод создает и возвращает новое блюдо
         :param submenu_id: id подменю, к которому относится блюдо
@@ -42,14 +41,13 @@ class DishService:
             title=new_dish.title,
             description=new_dish.description,
             price=new_dish.price,
-            submenu_id=submenu_id
+            submenu_id=submenu_id,
         )
 
         session.add(dish)
         await session.commit()
 
         return dish
-
 
     @classmethod
     async def get(cls, dish_id: UUID, session: AsyncSession) -> Union[Dish, None]:
@@ -64,9 +62,10 @@ class DishService:
 
         return submenu.scalar_one_or_none()
 
-
     @classmethod
-    async def update(cls, dish_id: UUID, data: DishInSchema, session: AsyncSession) -> None:
+    async def update(
+        cls, dish_id: UUID, data: DishInSchema, session: AsyncSession
+    ) -> None:
         """
         Метод обновляет блюдо по переданному id
         :param dish_id: id блюда для обновления
@@ -75,10 +74,13 @@ class DishService:
         :return: None
         """
         # model_dump(exclude_unset=True) - распаковывает явно переданные поля в patch-запросе
-        query = update(Dish).where(Dish.id == dish_id).values(data.model_dump(exclude_unset=True))
+        query = (
+            update(Dish)
+            .where(Dish.id == dish_id)
+            .values(data.model_dump(exclude_unset=True))
+        )
         await session.execute(query)
         await session.commit()
-
 
     @classmethod
     async def delete(cls, dish_id: UUID, session: AsyncSession) -> None:

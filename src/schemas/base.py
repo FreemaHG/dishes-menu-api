@@ -8,6 +8,7 @@ class BaseInSchema(BaseModel):
     """
     Базовая схема для добавления нового меню / блюда
     """
+
     title: str
     description: str
 
@@ -18,7 +19,6 @@ class BaseInSchema(BaseModel):
     def all_optional(cls, name: str) -> type[Self]:
         """
         Создает новую модель с теми же полями, но все необязательные.
-
         Использование: SomeOptionalModel = SomeModel.all_optional('SomeOptionalModel')
         """
         return create_model(
@@ -29,11 +29,12 @@ class BaseInSchema(BaseModel):
 
 
 # Схема для обновления меню / подменю (patch-запрос, поля не обязательные)
-BaseInOptionalSchema = BaseInSchema.all_optional('BaseInOptionalSchema')
+BaseInOptionalSchema = BaseInSchema.all_optional("BaseInOptionalSchema")
 
 
 class BaseOutSchema(BaseInSchema):
     """
     Базовая схема для вывода меню / блюда
     """
+
     id: UUID
