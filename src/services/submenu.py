@@ -4,6 +4,7 @@ from uuid import UUID
 from loguru import logger
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from src.models.submenu import Submenu
 from src.schemas.base import BaseInSchema
@@ -22,9 +23,10 @@ class SubmenuService:
         :param session: объект асинхронной сессии для запросов к БД
         :return: список с объектами подменю
         """
-        query = select(Submenu).where(Submenu.menu_id == menu_id)
+        # joinedload - связываем таблицы (join) для подсчета и вывода кол-во блюд
+        query = select(Submenu).options(joinedload(Submenu.dishes)).where(Submenu.menu_id == menu_id)
         res = await session.execute(query)
-        submenu_list = res.scalars().all()
+        submenu_list = res.unique().scalars().all()
 
         return list(submenu_list)
 
@@ -58,10 +60,11 @@ class SubmenuService:
         :param session: объект асинхронной сессии для запросов к БД
         :return: объект меню либо None
         """
-        query = select(Submenu).where(Submenu.id == submenu_id)
-        submenu = await session.execute(query)
+        query = select(Submenu).options(joinedload(Submenu.dishes)).where(Submenu.id == submenu_id)
+        res = await session.execute(query)
+        submenu = res.unique().scalar_one_or_none()
 
-        return submenu.scalar_one_or_none()
+        return submenu
 
 
     @classmethod
