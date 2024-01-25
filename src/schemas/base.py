@@ -1,4 +1,3 @@
-from typing import Self
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, create_model
@@ -16,7 +15,7 @@ class BaseInSchema(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     @classmethod
-    def all_optional(cls, name: str) -> type[Self]:
+    def all_optional(cls, name: str):
         """
         Создает новую модель с теми же полями, но все необязательные.
         Использование: SomeOptionalModel = SomeModel.all_optional('SomeOptionalModel')

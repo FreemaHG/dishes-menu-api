@@ -29,7 +29,7 @@ class DishService:
     @classmethod
     async def create(
         cls, submenu_id: UUID, new_dish: DishInSchema, session: AsyncSession
-    ) -> Union[Dish, False]:
+    ) -> Union[Dish, bool]:
         """
         Метод создает и возвращает новое блюдо
         :param submenu_id: id подменю, к которому относится блюдо
