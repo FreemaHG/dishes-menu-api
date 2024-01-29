@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from src.models.submenu import Submenu
-from src.schemas.base import BaseInSchema
+from src.schemas.base import BaseInSchema, BaseInOptionalSchema
 
 
 class SubmenuService:
@@ -74,7 +74,7 @@ class SubmenuService:
 
     @classmethod
     async def update(
-        cls, submenu_id: UUID, data: BaseInSchema, session: AsyncSession
+        cls, submenu_id: UUID, data: BaseInOptionalSchema, session: AsyncSession
     ) -> None:
         """
         Метод обновляет подменю по переданному id

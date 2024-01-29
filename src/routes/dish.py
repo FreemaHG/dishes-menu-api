@@ -39,7 +39,6 @@ async def get_dishes_list(
     response_model=Union[DishOutSchema, ResponseSchema],
     responses={
         201: {"model": DishOutSchema},
-        404: {"model": ResponseSchema},
     },
     status_code=201,
 )

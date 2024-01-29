@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 
 from src.models.menu import Menu
 from src.models.submenu import Submenu
-from src.schemas.base import BaseInSchema
+from src.schemas.base import BaseInSchema, BaseInOptionalSchema
 
 
 class MenuService:
@@ -68,7 +68,7 @@ class MenuService:
 
     @classmethod
     async def update(
-        cls, menu_id: UUID, data: BaseInSchema, session: AsyncSession
+        cls, menu_id: UUID, data: BaseInOptionalSchema, session: AsyncSession
     ) -> None:
         """
         Метод обновляет меню по переданному id

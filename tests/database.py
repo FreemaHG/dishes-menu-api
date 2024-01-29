@@ -4,11 +4,11 @@ from sqlalchemy.pool import NullPool
 
 from src.main import app
 from src.database import Base, get_async_session
-from src.config import DB_HOST, DB_NAME, DB_PASS, DB_USER, DB_PORT
+from src.config import DB_HOST_TEST, DB_NAME_TEST, DB_PASS_TEST, DB_USER_TEST, DB_PORT_TEST
 
 
 DATABASE_URL_TEST = (
-    f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    f"postgresql+asyncpg://{DB_USER_TEST}:{DB_PASS_TEST}@{DB_HOST_TEST}:{DB_PORT_TEST}/{DB_NAME_TEST}"
 )
 
 engine_test = create_async_engine(DATABASE_URL_TEST, poolclass=NullPool)

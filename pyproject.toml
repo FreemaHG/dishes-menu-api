@@ -7,7 +7,7 @@ pythonpath = [
 
 # Кастомные маркеры для быстрого запуска тестов нужной категории, н-р: pytest -v -m token
 markers = [
-    "routes: проверка роутов",
+    "integration: проверка роутов",
     # TODO Добавить ли тег для integration-тестов или все интеграционные тесты - это роуты?
 
     "unit: проверка методов в сервисах",
@@ -21,9 +21,9 @@ markers = [
 
 
 # Игнорировать предупреждения DeprecationWarning
-#filterwarnings = [
-#    "ignore::DeprecationWarning",
-#]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
 
 # Для нормальной отработки асинхронных функций Pytest
 asyncio_mode="auto"
