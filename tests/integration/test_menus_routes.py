@@ -88,6 +88,7 @@ class TestMenusRoutes:
         assert resp
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
+    @pytest.mark.usefixtures("menu")
     async def test_get_list_menu(
             self,
             menus_url: str,
@@ -167,13 +168,13 @@ class TestMenusRoutes:
     @pytest.mark.fail
     async def test_delete_menu_not_found(
             self,
-            menu_url: str,
+            menu_url_invalid: str,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что удаляемое меню не найдено
         """
-        resp = await client.delete(menu_url)
+        resp = await client.delete(menu_url_invalid)
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND
