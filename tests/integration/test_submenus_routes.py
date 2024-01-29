@@ -88,6 +88,7 @@ class TestSubmenusRoutes:
         assert resp
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
+    @pytest.mark.usefixtures("submenu")
     async def test_get_list_submenu(
             self,
             submenus_url: str,
@@ -167,13 +168,13 @@ class TestSubmenusRoutes:
     @pytest.mark.fail
     async def test_delete_submenu_not_found(
             self,
-            submenu_url: str,
+            submenu_url_invalid: str,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что удаляемое подменю не найдено
         """
-        resp = await client.delete(submenu_url)
+        resp = await client.delete(submenu_url_invalid)
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND

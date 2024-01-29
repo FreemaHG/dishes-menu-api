@@ -4,10 +4,8 @@ from typing import Dict
 import pytest
 from httpx import AsyncClient
 
-from src.schemas.base import BaseInSchema
 from src.schemas.dish import DishInSchema, DishOutSchema
 from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
-from src.schemas.submenu import SubmenuOutSchema
 
 
 @pytest.mark.integration
@@ -101,6 +99,7 @@ class TestDishesRoutes:
         assert resp
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
+    @pytest.mark.usefixtures("dish")
     async def test_get_list_dishes(
             self,
             dishes_url: str,
@@ -180,13 +179,13 @@ class TestDishesRoutes:
     @pytest.mark.fail
     async def test_delete_dish_not_found(
             self,
-            dish_url: str,
+            dish_url_invalid: str,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что удаляемое блюдо не найдено
         """
-        resp = await client.delete(dish_url)
+        resp = await client.delete(dish_url_invalid)
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND
