@@ -27,4 +27,4 @@ class DishOutSchema(BaseOutSchema):
         """
         Возвращаем цену блюда в виде строки с округлением до двух знаков после запятой
         """
-        return "%.2f" % val
+        return "%.2f" % float(val)

@@ -4,7 +4,7 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.dish import Dish
-from src.schemas.dish import DishInSchema
+from src.schemas.dish import DishInSchema, DishInOptionalSchema
 
 
 class DishService:
@@ -64,7 +64,7 @@ class DishService:
 
     @classmethod
     async def update(
-        cls, dish_id: UUID, data: DishInSchema, session: AsyncSession
+        cls, dish_id: UUID, data: DishInOptionalSchema, session: AsyncSession
     ) -> None:
         """
         Метод обновляет блюдо по переданному id
