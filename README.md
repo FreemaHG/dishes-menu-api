@@ -20,12 +20,13 @@
 * Во время выдачи списка подменю, для каждого подменю добавлять кол-во блюд в этом подменю.
 
 ## Используемые инструменты:
-* **Python** (3.11);
+* **Python** (3.10);
 * **FastAPI** (asynchronous Web Framework);
 * **PostgreSQL** (database);
 * **SQLAlchemy** (working with database from Python);
 * **Alembic** (database migrations made easy);
 * **Pydantic** (data verification);
+* **Pytest** (tests);
 * **Docker Compose** (for run the DB).
 
 ## Сборка и запуск
@@ -46,9 +47,34 @@
     http://127.0.0.1:8000/docs/
     ```
 
-## Запуск тестов
+## Запуск тестов ч/з PyTest
+
+1. Переименовываем файл "**.env.test.template**" в "**.env**".
 
 
+2. Собираем и запускаем контейнер с тестовой БД:
+   ```
+   docker-compose -f docker-compose-tests.yml up -d
+   ```
+
+3. Создаем и активируем виртуальное окружение:
+   ```
+   python3 -m venv venv
+   ```
+   ```
+   source venc/bin/activate
+   ```
+
+
+4. Устанавливаем зависимости:
+   ```
+   pip install -r requirements/test.txt
+   ```
+   
+3. Запускаем тесты:
+   ```
+   pytest -v
+   ```
 
 ## Запуск тестов в Postman
 
@@ -71,5 +97,5 @@
 Для запусков тестов нажимаем "Run Menu app"
 ![](/postman/5.png)
 
-Радуемся успешно пройденным тестам
+Радуемся успешно пройденным тестам.
 ![](/postman/6.png)

@@ -3,7 +3,6 @@ from typing import Union, List
 from uuid import UUID
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from loguru import logger
 
 from src.database import get_async_session
 from src.routes.abc_route import APIMenuRouter
