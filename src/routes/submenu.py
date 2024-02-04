@@ -19,19 +19,20 @@ router = APIMenuRouter(tags=["submenu"])
 
 @router.get(
     "/{menu_id}/submenus",
-    response_model=List[SubmenuOutSchema],  # Схема ответа
+    response_model=List[SubmenuOutSchema],
     responses={
         200: {"model": List[SubmenuOutSchema]}
-    },  # Примеры схем ответов для документации
+    },
 )
 async def get_submenus_list(
-    menu_id: UUID,
+    menu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Вывод списка подменю
+    Роут для вывода списка подменю
     """
-    submenu_list = await SubmenuService.get_list(menu_id=menu_id, session=session)
+    submenu_list = await SubmenuService.get_submenus_list(menu_id=menu_id, session=session)
+
     return submenu_list
 
 
@@ -44,28 +45,21 @@ async def get_submenus_list(
     status_code=201,
 )
 async def create_submenu(
-    menu_id: UUID,
+    menu_id: str,
     new_submenu: BaseInSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Добавление подменю
+    Роут для добавления подменю
     """
-    menu = await MenuService.get(menu_id=menu_id, session=session)
+    submenu = await SubmenuService.create(menu_id=menu_id, new_submenu=new_submenu, session=session)
 
-    if menu:
-        # Делаем два запроса, чтобы при первом создании подменю не было ошибки при выводе связанных данных
-        # (которых еще нет) из дочерних таблиц
-        submenu_id = await SubmenuService.create(
-            menu_id=menu_id, new_submenu=new_submenu, session=session
-        )
-        submenu = await SubmenuService.get(submenu_id=submenu_id, session=session)
-
-        return submenu
-    else:
+    if not submenu:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="menu not found"
         )
+
+    return submenu
 
 
 @router.get(
@@ -77,20 +71,20 @@ async def create_submenu(
     },
 )
 async def get_submenu(
-    submenu_id: UUID,
+    submenu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Вывод подменю по id
+    Роут для вывода подменю по id
     """
     submenu = await SubmenuService.get(submenu_id=submenu_id, session=session)
 
-    if submenu:
-        return submenu
+    if not submenu:
+        raise CustomApiException(
+            status_code=HTTPStatus.NOT_FOUND, detail="submenu not found"
+        )
 
-    raise CustomApiException(
-        status_code=HTTPStatus.NOT_FOUND, detail="submenu not found"
-    )
+    return submenu
 
 
 @router.patch(
@@ -102,22 +96,21 @@ async def get_submenu(
     },
 )
 async def update_submenu(
-    submenu_id: UUID,
+    submenu_id: str,
     data: BaseInOptionalSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Обновление подменю по id
+    Роут для обновления подменю по id
     """
-    update_menu = await SubmenuService.get(submenu_id=submenu_id, session=session)
+    updated_submenu = await SubmenuService.update(submenu_id=submenu_id, data=data, session=session)
 
-    if update_menu:
-        await SubmenuService.update(submenu_id=submenu_id, data=data, session=session)
-        return update_menu
-    else:
+    if not updated_submenu:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="submenu not found"
         )
+
+    return updated_submenu
 
 
 @router.delete(
@@ -129,18 +122,17 @@ async def update_submenu(
     },
 )
 async def delete_submenu(
-    submenu_id: UUID,
+    submenu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Удаление подменю по id
+    Роут для удаления подменю по id
     """
-    delete_submenu = await SubmenuService.get(submenu_id=submenu_id, session=session)
+    res = await SubmenuService.delete(submenu_id=submenu_id, session=session)
 
-    if delete_submenu:
-        await SubmenuService.delete(delete_submenu=delete_submenu, session=session)
-        return ResponseForDeleteSchema(message="The submenu has been deleted")
-    else:
+    if not res:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="submenu not found"
         )
+
+    return ResponseForDeleteSchema(message="The submenu has been deleted")

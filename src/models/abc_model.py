@@ -1,4 +1,5 @@
 import uuid
+from typing import Dict
 
 from sqlalchemy import String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -19,3 +20,12 @@ class BaseABC(Base):
     )
     title: Mapped[str] = mapped_column(String(280))
     description: Mapped[str] = mapped_column(Text)
+
+    def as_dict(self) -> Dict:
+        """
+        Преобразование модели в словарь (для кэширования в Redis)
+        """
+        model_dict = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        model_dict["id"] = str(model_dict["id"])
+
+        return model_dict
