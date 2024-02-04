@@ -8,8 +8,8 @@ from src.database import get_async_session
 from src.routes.abc_route import APIMenuRouter
 from src.schemas.dish import DishOutSchema, DishInSchema, DishInOptionalSchema
 from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
-from src.services.dish import DishService
-from src.services.submenu import SubmenuService
+# from src.services.dish import DishService
+# from src.services.submenu import SubmenuService
 from src.utils.exceptions import CustomApiException
 
 
@@ -24,7 +24,7 @@ router = APIMenuRouter(tags=["dish"])
     },  # Примеры схем ответов для документации
 )
 async def get_dishes_list(
-    submenu_id: UUID,
+    submenu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -43,7 +43,7 @@ async def get_dishes_list(
     status_code=201,
 )
 async def create_dish(
-    submenu_id: UUID,
+    submenu_id: str,
     new_dish: DishInSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
@@ -72,7 +72,7 @@ async def create_dish(
     },
 )
 async def get_dish(
-    dish_id: UUID,
+    dish_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
@@ -95,7 +95,7 @@ async def get_dish(
     },
 )
 async def update_dish(
-    dish_id: UUID,
+    dish_id: str,
     data: DishInOptionalSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
@@ -122,7 +122,7 @@ async def update_dish(
     },
 )
 async def delete_dish(
-    dish_id: UUID,
+    dish_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """

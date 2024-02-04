@@ -25,3 +25,13 @@ class Submenu(BaseABC):
         Кол-во блюд в подменю
         """
         return len(self.dishes)
+
+    def as_dict(self):
+        """
+        Преобразование модели в словарь (для кэширования в Redis)
+        """
+        model_dict = super().as_dict()
+        model_dict["menu_id"] = str(model_dict["menu_id"])
+        model_dict["dishes_count"] = self.dishes_count
+
+        return model_dict

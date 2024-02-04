@@ -1,6 +1,5 @@
 from http import HTTPStatus
 from typing import Union, List
-from uuid import UUID
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,18 +17,19 @@ router = APIMenuRouter(tags=["menu"])
 
 @router.get(
     "",
-    response_model=List[MenuOutSchema],  # Схема ответа
+    response_model=List[MenuOutSchema],
     responses={
         200: {"model": List[MenuOutSchema]}
-    },  # Примеры схем ответов для документации
+    },
 )
 async def get_menu_list(
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Вывод списка меню
+    Роут для вывода списка меню
     """
-    menu_list = await MenuService.get_list(session=session)
+    menu_list = await MenuService.get_menus_list(session=session)
+
     return menu_list
 
 
@@ -46,12 +46,9 @@ async def create_menu(
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Добавление меню
+    Роут для добавления нового меню
     """
-    # Делаем два запроса, чтобы при первом создании меню не было ошибки при выводе связанных данных
-    # (которых еще нет) из дочерних таблиц
-    menu_id = await MenuService.create(new_menu=new_menu, session=session)
-    menu = await MenuService.get(menu_id=menu_id, session=session)
+    menu = await MenuService.create(new_menu=new_menu, session=session)
 
     return menu
 
@@ -65,18 +62,20 @@ async def create_menu(
     },
 )
 async def get_menu(
-    menu_id: UUID,
+    menu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Вывод меню по id
+    Роут для вывода меню по id
     """
     menu = await MenuService.get(menu_id=menu_id, session=session)
 
-    if menu:
-        return menu
+    if not menu:
+        raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail="menu not found")
 
-    raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail="menu not found")
+    return menu
+
+
 
 
 @router.patch(
@@ -88,22 +87,21 @@ async def get_menu(
     },
 )
 async def update_menu(
-    menu_id: UUID,
+    menu_id: str,
     data: BaseInOptionalSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Обновление меню по id
+    Роут для обновления меню по id
     """
-    update_menu = await MenuService.get(menu_id=menu_id, session=session)
+    updated_menu = await MenuService.update(menu_id=menu_id, data=data, session=session)
 
-    if update_menu:
-        await MenuService.update(menu_id=menu_id, data=data, session=session)
-        return update_menu
-    else:
+    if not updated_menu:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="menu not found"
         )
+
+    return updated_menu
 
 
 @router.delete(
@@ -115,18 +113,17 @@ async def update_menu(
     },
 )
 async def delete_menu(
-    menu_id: UUID,
+    menu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Удаление меню по id
+    Роут дл удаления меню по id
     """
-    delete_menu = await MenuService.get(menu_id=menu_id, session=session)
+    res = await MenuService.delete(menu_id=menu_id, session=session)
 
-    if delete_menu:
-        await MenuService.delete(delete_menu=delete_menu, session=session)
-        return ResponseForDeleteSchema(message="The menu has been deleted")
-    else:
+    if not res:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="menu not found"
         )
+
+    return ResponseForDeleteSchema(message="The menu has been deleted")

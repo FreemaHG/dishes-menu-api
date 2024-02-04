@@ -32,3 +32,13 @@ class Menu(BaseABC):
         """
         count = sum(submenu.dishes_count for submenu in self.submenus)
         return count
+
+    def as_dict(self):
+        """
+        Преобразование модели в словарь (для кэширования в Redis)
+        """
+        model_dict = super().as_dict()
+        model_dict["submenus_count"] = self.submenus_count
+        model_dict["dishes_count"] = self.dishes_count
+
+        return model_dict

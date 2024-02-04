@@ -133,3 +133,4 @@ dmypy.json
 /.editorconfig
 
 /postgres_db/
+/new_venv/
