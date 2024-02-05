@@ -1,10 +1,9 @@
-from typing import List
-from sqlalchemy import select, update, insert
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
 from src.models.submenu import Submenu
-from src.schemas.base import BaseInSchema, BaseInOptionalSchema
+from src.schemas.base import BaseInOptionalSchema, BaseInSchema
 
 
 class SubmenuRepository:
@@ -13,7 +12,7 @@ class SubmenuRepository:
     """
 
     @classmethod
-    async def get_list(cls, menu_id: str, session: AsyncSession) -> List[Submenu]:
+    async def get_list(cls, menu_id: str, session: AsyncSession) -> list[Submenu]:
         """
         Метод возвращает список подменю из БД
         :param menu_id: id меню, к которому относится подменю
@@ -30,7 +29,6 @@ class SubmenuRepository:
         submenu_list = res.unique().scalars().all()
 
         return list(submenu_list)
-
 
     @classmethod
     async def create(
@@ -52,8 +50,7 @@ class SubmenuRepository:
         await session.commit()
 
         # Возвращаем id новой записи
-        return res.inserted_primary_key[0]
-
+        return str(res.inserted_primary_key[0])
 
     @classmethod
     async def get(cls, submenu_id: str, session: AsyncSession) -> Submenu | None:
@@ -72,7 +69,6 @@ class SubmenuRepository:
         submenu = res.unique().scalar_one_or_none()
 
         return submenu
-
 
     @classmethod
     async def update(
@@ -93,7 +89,6 @@ class SubmenuRepository:
         )
         await session.execute(query)
         await session.commit()
-
 
     @classmethod
     async def delete(cls, delete_submenu: Submenu, session: AsyncSession) -> None:

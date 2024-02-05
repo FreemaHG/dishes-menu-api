@@ -1,24 +1,24 @@
 from http import HTTPStatus
-from typing import Union, List
+from typing import Union
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_async_session
 from src.routes.abc_route import APIMenuRouter
-from src.schemas.dish import DishOutSchema, DishInSchema, DishInOptionalSchema
-from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
+from src.schemas.dish import DishInOptionalSchema, DishInSchema, DishOutSchema
+from src.schemas.response import ResponseForDeleteSchema, ResponseSchema
 from src.services.dish import DishService
 from src.utils.exceptions import CustomApiException
 
-
-router = APIMenuRouter(tags=["dish"])
+router = APIMenuRouter(tags=['dish'])
 
 
 @router.get(
-    "/{menu_id}/submenus/{submenu_id}/dishes",
-    response_model=List[DishOutSchema],
+    '/{menu_id}/submenus/{submenu_id}/dishes',
+    response_model=list[DishOutSchema],
     responses={
-        200: {"model": List[DishOutSchema]}
+        200: {'model': list[DishOutSchema]}
     },
 )
 async def get_dishes_list(
@@ -34,10 +34,10 @@ async def get_dishes_list(
 
 
 @router.post(
-    "/{menu_id}/submenus/{submenu_id}/dishes",
+    '/{menu_id}/submenus/{submenu_id}/dishes',
     response_model=Union[DishOutSchema, ResponseSchema],
     responses={
-        201: {"model": DishOutSchema},
+        201: {'model': DishOutSchema},
     },
     status_code=201,
 )
@@ -53,18 +53,18 @@ async def create_dish(
 
     if not dish:
         raise CustomApiException(
-            status_code=HTTPStatus.NOT_FOUND, detail="submenu not found"
+            status_code=HTTPStatus.NOT_FOUND, detail='submenu not found'
         )
 
     return dish
 
 
 @router.get(
-    "/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    '/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
     response_model=Union[DishOutSchema, ResponseSchema],
     responses={
-        200: {"model": DishOutSchema},
-        404: {"model": ResponseSchema},
+        200: {'model': DishOutSchema},
+        404: {'model': ResponseSchema},
     },
 )
 async def get_dish(
@@ -77,17 +77,17 @@ async def get_dish(
     dish = await DishService.get(dish_id=dish_id, session=session)
 
     if not dish:
-        raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail="dish not found")
+        raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail='dish not found')
 
     return dish
 
 
 @router.patch(
-    "/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    '/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
     response_model=Union[DishOutSchema, ResponseSchema],
     responses={
-        200: {"model": DishOutSchema},
-        404: {"model": ResponseSchema},
+        200: {'model': DishOutSchema},
+        404: {'model': ResponseSchema},
     },
 )
 async def update_dish(
@@ -102,18 +102,18 @@ async def update_dish(
 
     if not updated_dish:
         raise CustomApiException(
-            status_code=HTTPStatus.NOT_FOUND, detail="dish not found"
+            status_code=HTTPStatus.NOT_FOUND, detail='dish not found'
         )
 
     return updated_dish
 
 
 @router.delete(
-    "/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    '/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
     response_model=Union[ResponseForDeleteSchema, ResponseSchema],
     responses={
-        200: {"model": ResponseForDeleteSchema},
-        404: {"model": ResponseSchema},
+        200: {'model': ResponseForDeleteSchema},
+        404: {'model': ResponseSchema},
     },
 )
 async def delete_dish(
@@ -127,7 +127,7 @@ async def delete_dish(
 
     if not res:
         raise CustomApiException(
-            status_code=HTTPStatus.NOT_FOUND, detail="dish not found"
+            status_code=HTTPStatus.NOT_FOUND, detail='dish not found'
         )
 
-    return ResponseForDeleteSchema(message="The dish has been deleted")
+    return ResponseForDeleteSchema(message='The dish has been deleted')

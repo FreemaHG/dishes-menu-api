@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, relationship
 
@@ -12,10 +10,10 @@ class Menu(BaseABC):
     Модель для хранения записей о меню
     """
 
-    __tablename__ = "menu"
+    __tablename__ = 'menu'
 
-    submenus: Mapped[List["Submenu"]] = relationship(
-        backref="menu", cascade="all, delete"
+    submenus: Mapped[list['Submenu']] = relationship(
+        backref='menu', cascade='all, delete'
     )
 
     @hybrid_property
@@ -38,7 +36,7 @@ class Menu(BaseABC):
         Преобразование модели в словарь (для кэширования в Redis)
         """
         model_dict = super().as_dict()
-        model_dict["submenus_count"] = self.submenus_count
-        model_dict["dishes_count"] = self.dishes_count
+        model_dict['submenus_count'] = self.submenus_count
+        model_dict['dishes_count'] = self.dishes_count
 
         return model_dict

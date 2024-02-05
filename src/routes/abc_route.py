@@ -7,5 +7,5 @@ class APIMenuRouter(APIRouter):
     """
 
     def __init__(self, *args, **kwargs):
-        self.prefix = "/api/v1/menus"
-        super().__init__(prefix=self.prefix, *args, **kwargs)
+        self.prefix = '/api/v1/menus'
+        super().__init__(*args, **kwargs, prefix=self.prefix)
