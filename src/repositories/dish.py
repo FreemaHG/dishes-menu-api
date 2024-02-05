@@ -1,9 +1,8 @@
-from typing import List
-from sqlalchemy import select, update, delete
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.dish import Dish
-from src.schemas.dish import DishInSchema, DishInOptionalSchema
+from src.schemas.dish import DishInOptionalSchema, DishInSchema
 
 
 class DishRepository:
@@ -12,7 +11,7 @@ class DishRepository:
     """
 
     @classmethod
-    async def get_list(cls, submenu_id: str, session: AsyncSession) -> List[Dish]:
+    async def get_list(cls, submenu_id: str, session: AsyncSession) -> list[Dish]:
         """
         Метод возвращает список с блюдами из БД
         :param submenu_id: id подменю, к которому относятся блюда
@@ -24,7 +23,6 @@ class DishRepository:
         dishes_list = res.scalars().all()
 
         return list(dishes_list)
-
 
     @classmethod
     async def create(
@@ -49,7 +47,6 @@ class DishRepository:
 
         return dish
 
-
     @classmethod
     async def get(cls, dish_id: str, session: AsyncSession) -> Dish | None:
         """
@@ -62,7 +59,6 @@ class DishRepository:
         submenu = await session.execute(query)
 
         return submenu.scalar_one_or_none()
-
 
     @classmethod
     async def update(
@@ -83,7 +79,6 @@ class DishRepository:
         )
         await session.execute(query)
         await session.commit()
-
 
     @classmethod
     async def delete(cls, dish_id: str, session: AsyncSession) -> None:

@@ -1,14 +1,10 @@
-from typing import Union, List, Any, Sequence
-from uuid import UUID
-from sqlalchemy import select, update, insert, Row, RowMapping, literal_column, func, true, distinct
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload, aliased
-from loguru import logger
+from sqlalchemy.orm import joinedload
 
-from src.models.dish import Dish
 from src.models.menu import Menu
 from src.models.submenu import Submenu
-from src.schemas.base import BaseInSchema, BaseInOptionalSchema
+from src.schemas.base import BaseInOptionalSchema, BaseInSchema
 
 
 class MenuRepository:
@@ -17,7 +13,7 @@ class MenuRepository:
     """
 
     @classmethod
-    async def get_list(cls, session: AsyncSession) -> List[Menu]:
+    async def get_list(cls, session: AsyncSession) -> list[Menu]:
         """
         Метод возвращает меню из БД
         :param session: объект асинхронной сессии для запросов к БД
@@ -31,7 +27,6 @@ class MenuRepository:
         menus_list = res.unique().scalars().all()
 
         return list(menus_list)
-
 
     @classmethod
     async def create(cls, new_menu: BaseInSchema, session: AsyncSession) -> str:
@@ -49,8 +44,7 @@ class MenuRepository:
         await session.commit()
 
         # Возвращаем id новой записи
-        return res.inserted_primary_key[0]
-
+        return str(res.inserted_primary_key[0])
 
     @classmethod
     async def get(cls, menu_id: str, session: AsyncSession) -> Menu | None:
@@ -71,7 +65,6 @@ class MenuRepository:
 
         return menu
 
-
     @classmethod
     async def update(
         cls, menu_id: str, data: BaseInOptionalSchema, session: AsyncSession
@@ -91,7 +84,6 @@ class MenuRepository:
         )
         await session.execute(query)
         await session.commit()
-
 
     @classmethod
     async def delete(cls, delete_menu: Menu, session: AsyncSession) -> None:

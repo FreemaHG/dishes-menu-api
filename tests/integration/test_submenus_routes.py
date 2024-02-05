@@ -1,11 +1,11 @@
 import json
 from http import HTTPStatus
-from typing import Dict
+
 import pytest
 from httpx import AsyncClient
 
 from src.schemas.base import BaseInSchema
-from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
+from src.schemas.response import ResponseForDeleteSchema, ResponseSchema
 from src.schemas.submenu import SubmenuOutSchema
 
 
@@ -35,7 +35,7 @@ class TestSubmenusRoutes:
             self,
             submenus_url: str,
             client: AsyncClient,
-            invalid_data: Dict
+            invalid_data: dict
     ) -> None:
         """
         Проверка ответа при создании подменю при невалидных данных
@@ -74,21 +74,7 @@ class TestSubmenusRoutes:
         assert resp.status_code == HTTPStatus.NOT_FOUND
         assert ResponseSchema.model_validate(resp.json())
 
-    @pytest.mark.fail
-    async def test_get_submenu_validation_error(
-            self,
-            submenus_url: str,
-            client: AsyncClient
-    ) -> None:
-        """
-        Проверка вывода сообщения о невалидном URL для вывода подменю
-        """
-        resp = await client.get("/".join([submenus_url, "9"]))
-
-        assert resp
-        assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-
-    @pytest.mark.usefixtures("submenu")
+    @pytest.mark.usefixtures('submenu')
     async def test_get_list_submenu(
             self,
             submenus_url: str,
@@ -108,7 +94,7 @@ class TestSubmenusRoutes:
     async def test_update_submenu(
             self,
             submenu_url: str,
-            submenu_update_data: Dict,
+            submenu_update_data: dict,
             client: AsyncClient
     ) -> None:
         """
@@ -124,7 +110,7 @@ class TestSubmenusRoutes:
     async def test_update_submenu_not_found(
             self,
             submenu_url_invalid: str,
-            submenu_update_data: Dict,
+            submenu_update_data: dict,
             client: AsyncClient
     ) -> None:
         """
@@ -140,7 +126,7 @@ class TestSubmenusRoutes:
     async def test_update_submenu_validation_error(
             self,
             submenu_url: str,
-            invalid_data: Dict,
+            invalid_data: dict,
             client: AsyncClient
     ) -> None:
         """

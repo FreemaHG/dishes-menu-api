@@ -1,16 +1,13 @@
-import pytest
-from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 
+import pytest
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.models.dish import Dish
-from src.models.menu import Menu
 from src.models.submenu import Submenu
-from src.schemas.base import BaseInSchema, BaseInOptionalSchema
-from src.schemas.dish import DishInSchema, DishInOptionalSchema
-from src.services.dish import DishService
-from src.services.menu import MenuService
-from src.services.submenu import SubmenuService
+from src.repositories.dish import DishRepository
+from src.schemas.dish import DishInOptionalSchema, DishInSchema
 
 
 @pytest.mark.unit
@@ -28,11 +25,10 @@ class TestDishesServices:
         """
         Проверка метода для создания блюда
         """
-        created_dish = await DishService.create(submenu_id=submenu.id, new_dish=dish_schema, session=session)
+        created_dish = await DishRepository.create(submenu_id=submenu.id, new_dish=dish_schema, session=session)
 
         assert created_dish
         assert isinstance(created_dish.id, UUID)
-
 
     async def test_get_dish(
             self,
@@ -42,12 +38,11 @@ class TestDishesServices:
         """
         Проверка метода для получения блюда по id
         """
-        dish_res = await DishService.get(dish_id=dish.id, session=session)
+        dish_res = await DishRepository.get(dish_id=dish.id, session=session)
 
         assert dish_res
         assert isinstance(dish_res.id, UUID)
         assert dish_res.id == dish.id
-
 
     async def test_get_list_dishes(
             self,
@@ -57,11 +52,10 @@ class TestDishesServices:
         """
         Проверка метода для получения списка блюд
         """
-        dishes_list = await DishService.get_list(submenu_id=submenu.id, session=session)
+        dishes_list = await DishRepository.get_list(submenu_id=submenu.id, session=session)
 
         assert dishes_list
         assert isinstance(dishes_list, list)
-
 
     async def test_update_dish(
             self,
@@ -72,14 +66,13 @@ class TestDishesServices:
         """
         Проверка метода для обновления меню
         """
-        await DishService.update(dish_id=dish.id, data=dish_update_schema, session=session)
+        await DishRepository.update(dish_id=dish.id, data=dish_update_schema, session=session)
 
         query = select(Dish).where(Dish.id == dish.id)
         res = await session.execute(query)
         updated_dish = res.scalar()
 
         assert updated_dish.title == dish_update_schema.title
-
 
     async def test_delete_dish(
             self,
@@ -89,7 +82,7 @@ class TestDishesServices:
         """
         Проверка метода для удаления блюда по id
         """
-        await DishService.delete(dish_id=dish.id, session=session)
+        await DishRepository.delete(dish_id=dish.id, session=session)
 
         query = select(Dish).where(Dish.id == dish.id)
         res = await session.execute(query)

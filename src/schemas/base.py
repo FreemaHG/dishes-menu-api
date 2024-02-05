@@ -28,7 +28,7 @@ class BaseInSchema(BaseModel):
 
 
 # Схема для обновления меню / подменю (patch-запрос, поля не обязательные)
-BaseInOptionalSchema = BaseInSchema.all_optional("BaseInOptionalSchema")
+BaseInOptionalSchema = BaseInSchema.all_optional('BaseInOptionalSchema')
 
 
 class BaseOutSchema(BaseInSchema):
