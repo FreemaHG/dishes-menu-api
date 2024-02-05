@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from typing import Union
+from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -62,13 +63,13 @@ async def create_menu(
     },
 )
 async def get_menu(
-    menu_id: str,
+    menu_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для вывода меню по id
     """
-    menu = await MenuService.get(menu_id=menu_id, session=session)
+    menu = await MenuService.get(menu_id=str(menu_id), session=session)
 
     if not menu:
         raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail='menu not found')
@@ -85,14 +86,14 @@ async def get_menu(
     },
 )
 async def update_menu(
-    menu_id: str,
+    menu_id: UUID,
     data: BaseInOptionalSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для обновления меню по id
     """
-    updated_menu = await MenuService.update(menu_id=menu_id, data=data, session=session)
+    updated_menu = await MenuService.update(menu_id=str(menu_id), data=data, session=session)
 
     if not updated_menu:
         raise CustomApiException(
@@ -111,13 +112,13 @@ async def update_menu(
     },
 )
 async def delete_menu(
-    menu_id: str,
+    menu_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут дл удаления меню по id
     """
-    res = await MenuService.delete(menu_id=menu_id, session=session)
+    res = await MenuService.delete(menu_id=str(menu_id), session=session)
 
     if not res:
         raise CustomApiException(

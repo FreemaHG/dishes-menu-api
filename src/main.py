@@ -5,8 +5,6 @@ from src.utils.exceptions import CustomApiException, custom_api_exception_handle
 
 app = FastAPI(title='DishesApi', debug=True)
 
-# TODO Очищать кэш полностью при каждом новом запуске сервера
-# TODO автоматическая проверка, что не будет лагов при запуске API с новой БД
 
 # Регистрация URL
 register_routers(app)

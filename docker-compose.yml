@@ -8,36 +8,28 @@ services:
       env_file:
         - .env
       container_name: api
-      # Всегла перезагружать контейнер
-      #      container_name: redis
+      restart: on-failure
       expose:
         - 8000
       ports:
         - 8000:8000
       command: [ "/docker/api.sh" ]
       depends_on:
-        redis:
-          condition: service_healthy
         postgres:
           condition: service_healthy
 
     redis:
       image: redis:7.2
       container_name: redis
-      restart: unless-stopped
-      command: --port 5370
+      restart: always
+      command: --port ${REDIS_PORT:?err}
       expose:
-        - 5370
-      healthcheck:
-        test: [ "CMD", "redis-cli", "ping" ]
-        interval: 1s
-        timeout: 3s
-        retries: 30
+        - ${REDIS_PORT:?err}
 
     postgres:
       image: postgres:15.1-alpine
       container_name: db
-      #      container_name: redis
+      restart: always
       command: -p 5432
       expose:
         - 5432

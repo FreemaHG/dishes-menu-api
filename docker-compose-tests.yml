@@ -2,15 +2,44 @@ version: "3.11"
 
 services:
 
-    postgres_test:
-      image: postgres:15.1-alpine
-      container_name: test_db
-      command: -p 5555
+    api_test:
+      build:
+        context: .
+        dockerfile: Dockerfile-test
+      env_file:
+        - .env
+      container_name: test_api
       expose:
-        - 5555
+        - 8000
       ports:
-        - 5555:5555
+        - 8000:8000
+      command: [ "/docker/test.sh" ]
+      depends_on:
+        postgres:
+          condition: service_healthy
+
+    redis_test:
+      image: redis:7.2
+      container_name: test_redis
+      command: --port ${REDIS_PORT:?err}
+      expose:
+        - ${REDIS_PORT:?err}
+
+    postgres:
+      image: postgres:15.1-alpine
+      container_name: db
+      restart: always
+      command: -p 5432
+      expose:
+        - 5432
+      ports:
+        - 5432:5432
       environment:
         - POSTGRES_USER=${DB_USER_TEST:?err}
         - POSTGRES_PASSWORD=${DB_PASS_TEST:?err}
         - POSTGRES_DB=${DB_NAME_TEST:?err}
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready", "-U", "postgres" ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
