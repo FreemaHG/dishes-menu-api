@@ -10,10 +10,8 @@
    1. [Prod](#Prod)
    2. [Test](#Test)
    3. [Dev](#Dev)
-      1. [Pre-commit хуки](#Pre-commit_хуки)
+      1. [Pre-commit хуки](#Pre-commit)
 4. [Postman-тесты](#Postman-тесты)
-
-5. <a name="твоё_название">Текст ссылки</a> 
 
 ## Описание
 
@@ -130,7 +128,7 @@
    docker-compose down postgres redis
    ```
 
-#### Pre-commit хуки
+#### Pre-commit
 
 В проекте используются Git-хуки для автоматической проверки и форматирования кода перед созданием коммита.
 
