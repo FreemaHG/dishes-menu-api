@@ -58,6 +58,7 @@ class SubmenuService:
 
             await redis_client.delete(f"menu_{menu_id}_submenus_list")
             await redis_client.delete("menus_list")
+            await redis_client.delete(f"menu_{menu_id}")
 
             return submenu
 
@@ -125,12 +126,15 @@ class SubmenuService:
         if delete_submenu:
             await SubmenuRepository.delete(delete_submenu=delete_submenu, session=session)
 
+            await redis_client.delete(f"submenu_{delete_submenu.id}_dishes_list")
             await redis_client.delete(f"menu_{delete_submenu.menu_id}_submenus_list")
-            await redis_client.delete(f"submenu_{submenu_id}")
             await redis_client.delete("menus_list")
+            await redis_client.delete(f"submenu_{submenu_id}")
+            await redis_client.delete(f"menu_{delete_submenu.menu_id}")
 
-            # TODO Вызов метода для получения id всех блюд
-            # TODO Вызов метода для очистки кэша для всех блюд по id!!!
+            # Очистка кэша для всех блюд в подменю
+            for dish in delete_submenu.dishes:
+                await redis_client.delete(f"dish_{dish.id}")
 
             logger.info(f"Подменю удалено")
             return True

@@ -1,5 +1,4 @@
-from typing import Union, List
-from uuid import UUID
+from typing import List
 from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,16 +8,16 @@ from src.schemas.dish import DishInSchema, DishInOptionalSchema
 
 class DishRepository:
     """
-    Сервис для вывода списка блюд, создания, обновления и удаления блюда
+    Получение списка блюд, создания, обновление и удаления блюда из БД
     """
 
     @classmethod
-    async def get_list(cls, submenu_id: UUID, session: AsyncSession) -> List[Dish]:
+    async def get_list(cls, submenu_id: str, session: AsyncSession) -> List[Dish]:
         """
-        Метод возвращает список с блюдами
+        Метод возвращает список с блюдами из БД
         :param submenu_id: id подменю, к которому относятся блюда
         :param session: объект асинхронной сессии для запросов к БД
-        :return: список с объектами блюд
+        :return: список с блюдами
         """
         query = select(Dish).where(Dish.submenu_id == submenu_id)
         res = await session.execute(query)
@@ -26,12 +25,13 @@ class DishRepository:
 
         return list(dishes_list)
 
+
     @classmethod
     async def create(
-        cls, submenu_id: UUID, new_dish: DishInSchema, session: AsyncSession
+        cls, submenu_id: str, new_dish: DishInSchema, session: AsyncSession
     ) -> Dish:
         """
-        Метод создает и возвращает новое блюдо
+        Метод создает и возвращает новое блюдо из БД
         :param submenu_id: id подменю, к которому относится блюдо
         :param new_dish: параметры для сохранения нового блюда
         :param session: объект асинхронной сессии для запросов к БД
@@ -49,10 +49,11 @@ class DishRepository:
 
         return dish
 
+
     @classmethod
-    async def get(cls, dish_id: UUID, session: AsyncSession) -> Union[Dish, None]:
+    async def get(cls, dish_id: str, session: AsyncSession) -> Dish | None:
         """
-        Метод возвращает блюдо по переданному id
+        Метод возвращает блюдо из БД по переданному id
         :param dish_id: id блюда для поиска
         :param session: объект асинхронной сессии для запросов к БД
         :return: объект блюда либо None
@@ -62,12 +63,13 @@ class DishRepository:
 
         return submenu.scalar_one_or_none()
 
+
     @classmethod
     async def update(
-        cls, dish_id: UUID, data: DishInOptionalSchema, session: AsyncSession
+        cls, dish_id: str, data: DishInOptionalSchema, session: AsyncSession
     ) -> None:
         """
-        Метод обновляет блюдо по переданному id
+        Метод обновляет блюдо в БД по переданному id
         :param dish_id: id блюда для обновления
         :param data: параметры для сохранения нового блюда
         :param session: объект асинхронной сессии для запросов к БД
@@ -82,10 +84,11 @@ class DishRepository:
         await session.execute(query)
         await session.commit()
 
+
     @classmethod
-    async def delete(cls, dish_id: UUID, session: AsyncSession) -> None:
+    async def delete(cls, dish_id: str, session: AsyncSession) -> None:
         """
-        Метод удаляет блюдо по переданному id
+        Метод удаляет блюдо из БД по переданному id
         :param dish_id: id блюда для поиска
         :param session: объект асинхронной сессии для запросов к БД
         :return: None

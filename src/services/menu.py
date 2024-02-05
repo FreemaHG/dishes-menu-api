@@ -116,8 +116,15 @@ class MenuService:
             await redis_client.delete("menus_list")
             await redis_client.delete(f"menu_{menu_id}")
 
-            # TODO Вызов метода для получения id всех подменю и блюд
-            # TODO Вызов метода для очистки кэша для всех подменю и блюд по id!!!
+            # Очистка кэша для всех подменю в меню
+            for submenu in delete_menu.submenus:
+                logger.error(f"Очистка кэша для подменю: {submenu.id}")
+                await redis_client.delete(f"submenu_{submenu.id}")
+
+                # Очистка кэша для всех блюд в подменю
+                for dish in submenu.dishes:
+                    logger.error(f"Очистка кэша для блюда: {dish.id}")
+                    await redis_client.delete(f"dish_{dish.id}")
 
             logger.info(f"Меню удалено")
             return True

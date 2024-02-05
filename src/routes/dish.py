@@ -1,6 +1,5 @@
 from http import HTTPStatus
 from typing import Union, List
-from uuid import UUID
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,8 +7,7 @@ from src.database import get_async_session
 from src.routes.abc_route import APIMenuRouter
 from src.schemas.dish import DishOutSchema, DishInSchema, DishInOptionalSchema
 from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
-# from src.services.dish import DishService
-# from src.services.submenu import SubmenuService
+from src.services.dish import DishService
 from src.utils.exceptions import CustomApiException
 
 
@@ -18,19 +16,20 @@ router = APIMenuRouter(tags=["dish"])
 
 @router.get(
     "/{menu_id}/submenus/{submenu_id}/dishes",
-    response_model=List[DishOutSchema],  # Схема ответа
+    response_model=List[DishOutSchema],
     responses={
         200: {"model": List[DishOutSchema]}
-    },  # Примеры схем ответов для документации
+    },
 )
 async def get_dishes_list(
     submenu_id: str,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Вывод списка с блюдами
+    Роут для вывода списка с блюдами
     """
-    dishes_list = await DishService.get_list(submenu_id=submenu_id, session=session)
+    dishes_list = await DishService.get_dishes_list(submenu_id=submenu_id, session=session)
+
     return dishes_list
 
 
@@ -48,19 +47,16 @@ async def create_dish(
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Добавление блюда
+    Роут для добавления блюда
     """
-    submenu = await SubmenuService.get(submenu_id=submenu_id, session=session)
+    dish = await DishService.create(submenu_id=submenu_id, new_dish=new_dish, session=session)
 
-    if submenu:
-        created_dish = await DishService.create(
-            submenu_id=submenu_id, new_dish=new_dish, session=session
-        )
-        return created_dish
-    else:
+    if not dish:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="submenu not found"
         )
+
+    return dish
 
 
 @router.get(
@@ -76,14 +72,14 @@ async def get_dish(
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Вывод блюда по id
+    Роут для вывода блюда по id
     """
     dish = await DishService.get(dish_id=dish_id, session=session)
 
-    if dish:
-        return dish
+    if not dish:
+        raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail="dish not found")
 
-    raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail="dish not found")
+    return dish
 
 
 @router.patch(
@@ -100,17 +96,16 @@ async def update_dish(
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Обновление блюда по id
+    Роут для обновления блюда по id
     """
-    update_dish = await DishService.get(dish_id=dish_id, session=session)
+    updated_dish = await DishService.update(dish_id=dish_id, data=data, session=session)
 
-    if update_dish:
-        await DishService.update(dish_id=dish_id, data=data, session=session)
-        return update_dish
-    else:
+    if not updated_dish:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="dish not found"
         )
+
+    return updated_dish
 
 
 @router.delete(
@@ -126,14 +121,13 @@ async def delete_dish(
     session: AsyncSession = Depends(get_async_session),
 ):
     """
-    Удаление блюда по id
+    Роят для удаления блюда по id
     """
-    delete_dish = await DishService.get(dish_id=dish_id, session=session)
+    res = await DishService.delete(dish_id=dish_id, session=session)
 
-    if delete_dish:
-        await DishService.delete(dish_id=dish_id, session=session)
-        return ResponseForDeleteSchema(message="The dish has been deleted")
-    else:
+    if not res:
         raise CustomApiException(
             status_code=HTTPStatus.NOT_FOUND, detail="dish not found"
         )
+
+    return ResponseForDeleteSchema(message="The dish has been deleted")

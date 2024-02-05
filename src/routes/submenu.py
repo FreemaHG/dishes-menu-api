@@ -1,6 +1,5 @@
 from http import HTTPStatus
 from typing import Union, List
-from uuid import UUID
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +8,6 @@ from src.routes.abc_route import APIMenuRouter
 from src.schemas.base import BaseInSchema, BaseInOptionalSchema
 from src.schemas.submenu import SubmenuOutSchema
 from src.schemas.response import ResponseSchema, ResponseForDeleteSchema
-from src.services.menu import MenuService
 from src.services.submenu import SubmenuService
 from src.utils.exceptions import CustomApiException
 
