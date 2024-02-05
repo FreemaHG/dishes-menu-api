@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from typing import Union
+from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,13 +24,13 @@ router = APIMenuRouter(tags=['submenu'])
     },
 )
 async def get_submenus_list(
-    menu_id: str,
+    menu_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для вывода списка подменю
     """
-    submenu_list = await SubmenuService.get_submenus_list(menu_id=menu_id, session=session)
+    submenu_list = await SubmenuService.get_submenus_list(menu_id=str(menu_id), session=session)
 
     return submenu_list
 
@@ -43,14 +44,14 @@ async def get_submenus_list(
     status_code=201,
 )
 async def create_submenu(
-    menu_id: str,
+    menu_id: UUID,
     new_submenu: BaseInSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для добавления подменю
     """
-    submenu = await SubmenuService.create(menu_id=menu_id, new_submenu=new_submenu, session=session)
+    submenu = await SubmenuService.create(menu_id=str(menu_id), new_submenu=new_submenu, session=session)
 
     if not submenu:
         raise CustomApiException(
@@ -69,13 +70,13 @@ async def create_submenu(
     },
 )
 async def get_submenu(
-    submenu_id: str,
+    submenu_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для вывода подменю по id
     """
-    submenu = await SubmenuService.get(submenu_id=submenu_id, session=session)
+    submenu = await SubmenuService.get(submenu_id=str(submenu_id), session=session)
 
     if not submenu:
         raise CustomApiException(
@@ -94,14 +95,14 @@ async def get_submenu(
     },
 )
 async def update_submenu(
-    submenu_id: str,
+    submenu_id: UUID,
     data: BaseInOptionalSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для обновления подменю по id
     """
-    updated_submenu = await SubmenuService.update(submenu_id=submenu_id, data=data, session=session)
+    updated_submenu = await SubmenuService.update(submenu_id=str(submenu_id), data=data, session=session)
 
     if not updated_submenu:
         raise CustomApiException(
@@ -120,13 +121,13 @@ async def update_submenu(
     },
 )
 async def delete_submenu(
-    submenu_id: str,
+    submenu_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для удаления подменю по id
     """
-    res = await SubmenuService.delete(submenu_id=submenu_id, session=session)
+    res = await SubmenuService.delete(submenu_id=str(submenu_id), session=session)
 
     if not res:
         raise CustomApiException(

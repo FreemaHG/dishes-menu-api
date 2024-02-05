@@ -1,0 +1,20 @@
+FROM python:3.10-slim
+
+COPY requirements/base.txt /src/requirements/base.txt
+
+COPY requirements/test.txt /src/requirements/test.txt
+
+RUN pip install --no-cache-dir --upgrade -r /src/requirements/test.txt
+
+COPY ./src /src
+
+COPY ./tests /tests
+
+COPY ./pyproject.toml pyproject.toml
+
+COPY docker/test.sh /docker/test.sh
+
+RUN chmod a+x docker/*.sh
+
+# Иначе тесты не запустятся
+WORKDIR /tests

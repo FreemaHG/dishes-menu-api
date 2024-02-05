@@ -6,3 +6,4 @@ greenlet==3.0.3
 python-dotenv==1.0.0
 fastapi_redis==0.1.11
 uvicorn==0.26.0
+loguru==0.7.2

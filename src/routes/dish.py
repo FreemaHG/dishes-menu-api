@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from typing import Union
+from uuid import UUID
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -22,13 +23,13 @@ router = APIMenuRouter(tags=['dish'])
     },
 )
 async def get_dishes_list(
-    submenu_id: str,
+    submenu_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для вывода списка с блюдами
     """
-    dishes_list = await DishService.get_dishes_list(submenu_id=submenu_id, session=session)
+    dishes_list = await DishService.get_dishes_list(submenu_id=str(submenu_id), session=session)
 
     return dishes_list
 
@@ -42,14 +43,14 @@ async def get_dishes_list(
     status_code=201,
 )
 async def create_dish(
-    submenu_id: str,
+    submenu_id: UUID,
     new_dish: DishInSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для добавления блюда
     """
-    dish = await DishService.create(submenu_id=submenu_id, new_dish=new_dish, session=session)
+    dish = await DishService.create(submenu_id=str(submenu_id), new_dish=new_dish, session=session)
 
     if not dish:
         raise CustomApiException(
@@ -68,13 +69,13 @@ async def create_dish(
     },
 )
 async def get_dish(
-    dish_id: str,
+    dish_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для вывода блюда по id
     """
-    dish = await DishService.get(dish_id=dish_id, session=session)
+    dish = await DishService.get(dish_id=str(dish_id), session=session)
 
     if not dish:
         raise CustomApiException(status_code=HTTPStatus.NOT_FOUND, detail='dish not found')
@@ -91,14 +92,14 @@ async def get_dish(
     },
 )
 async def update_dish(
-    dish_id: str,
+    dish_id: UUID,
     data: DishInOptionalSchema,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для обновления блюда по id
     """
-    updated_dish = await DishService.update(dish_id=dish_id, data=data, session=session)
+    updated_dish = await DishService.update(dish_id=str(dish_id), data=data, session=session)
 
     if not updated_dish:
         raise CustomApiException(
@@ -117,13 +118,13 @@ async def update_dish(
     },
 )
 async def delete_dish(
-    dish_id: str,
+    dish_id: UUID,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роят для удаления блюда по id
     """
-    res = await DishService.delete(dish_id=dish_id, session=session)
+    res = await DishService.delete(dish_id=str(dish_id), session=session)
 
     if not res:
         raise CustomApiException(
