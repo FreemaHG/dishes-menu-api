@@ -10,7 +10,7 @@ from src.schemas.base import BaseInOptionalSchema, BaseInSchema
 
 
 @pytest.mark.unit
-class TestMenusServices:
+class TestMenusRepositoriess:
     """
     Тестирование сервисов для создания, вывода, обновления и удаления меню
     """

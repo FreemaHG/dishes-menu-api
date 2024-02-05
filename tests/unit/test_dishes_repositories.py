@@ -11,7 +11,7 @@ from src.schemas.dish import DishInOptionalSchema, DishInSchema
 
 
 @pytest.mark.unit
-class TestDishesServices:
+class TestDishesRepositories:
     """
     Тестирование сервисов для создания, вывода, обновления и удаления блюд
     """

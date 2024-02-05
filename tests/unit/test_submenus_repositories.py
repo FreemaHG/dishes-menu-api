@@ -11,7 +11,7 @@ from src.schemas.base import BaseInOptionalSchema, BaseInSchema
 
 
 @pytest.mark.unit
-class TestSubmenusServices:
+class TestSubmenusRepositories:
     """
     Тестирование сервисов для создания, вывода, обновления и удаления подменю
     """
