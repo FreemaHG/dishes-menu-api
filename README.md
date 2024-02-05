@@ -26,8 +26,9 @@
 * **SQLAlchemy** (working with database from Python);
 * **Alembic** (database migrations made easy);
 * **Pydantic** (data verification);
+* **Redis** (caching);
 * **Pytest** (tests);
-* **Docker Compose** (for run the DB).
+* **Docker Compose**.
 
 ## Сборка и запуск
 1. Скачиваем содержимое репозитория в отдельную папку:

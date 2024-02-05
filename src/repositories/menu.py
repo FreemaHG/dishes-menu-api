@@ -13,7 +13,7 @@ from src.schemas.base import BaseInSchema, BaseInOptionalSchema
 
 class MenuRepository:
     """
-    Получение списка меню, создания, обновления и удаления меню из БД
+    Получение списка меню, создания, обновление и удаления меню из БД
     """
 
     @classmethod

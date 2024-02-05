@@ -1,9 +1,7 @@
-from typing import Union, List
-from uuid import UUID
+from typing import List
 from sqlalchemy import select, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-from loguru import logger
 
 from src.models.submenu import Submenu
 from src.schemas.base import BaseInSchema, BaseInOptionalSchema
@@ -11,7 +9,7 @@ from src.schemas.base import BaseInSchema, BaseInOptionalSchema
 
 class SubmenuRepository:
     """
-    Получение списка подменю, создания, обновления и удаления подменю
+    Получение списка подменю, создания, обновление и удаления подменю из БД
     """
 
     @classmethod
