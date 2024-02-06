@@ -1,9 +1,14 @@
 import json
+import uuid
 from http import HTTPStatus
 
 import pytest
 from httpx import AsyncClient
 
+from src.main import app
+from src.models.dish import Dish
+from src.models.menu import Menu
+from src.models.submenu import Submenu
 from src.schemas.dish import DishInSchema, DishOutSchema
 from src.schemas.response import ResponseForDeleteSchema, ResponseSchema
 
@@ -26,14 +31,16 @@ class TestDishesRoutes:
 
     async def test_create_dish(
             self,
-            dishes_url: str,
+            menu: Menu,
+            submenu: Submenu,
             client: AsyncClient,
             dish_schema: DishInSchema
     ) -> None:
         """
         Проверка роута для создания нового блюда
         """
-        resp = await client.post(dishes_url, json=dish_schema.model_dump())
+        url = app.url_path_for('create_dish', menu_id=menu.id, submenu_id=submenu.id)
+        resp = await client.post(url, json=dish_schema.model_dump())
 
         assert resp
         assert resp.status_code == HTTPStatus.CREATED
@@ -42,27 +49,32 @@ class TestDishesRoutes:
     @pytest.mark.fail
     async def test_create_dish_fail(
             self,
-            dishes_url: str,
+            menu: Menu,
+            submenu: Submenu,
             client: AsyncClient,
             invalid_data: dict
     ) -> None:
         """
         Проверка ответа при создании блюда при невалидных данных
         """
-        resp = await client.post(dishes_url, json=json.dumps(invalid_data))
+        url = app.url_path_for('create_dish', menu_id=menu.id, submenu_id=submenu.id)
+        resp = await client.post(url, json=json.dumps(invalid_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     async def test_get_dish(
             self,
-            dish_url: str,
+            menu: Menu,
+            submenu: Submenu,
+            dish: Dish,
             client: AsyncClient
     ) -> None:
         """
         Проверка роута для вывода блюда по id
         """
-        resp = await client.get(dish_url)
+        url = app.url_path_for('get_dish', menu_id=menu.id, submenu_id=submenu.id, dish_id=dish.id)
+        resp = await client.get(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -71,13 +83,15 @@ class TestDishesRoutes:
     @pytest.mark.fail
     async def test_get_dish_not_found(
             self,
-            dish_url_invalid: str,
+            menu: Menu,
+            submenu: Submenu,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что блюдо не найдено
         """
-        resp = await client.get(dish_url_invalid)
+        url = app.url_path_for('get_dish', menu_id=menu.id, submenu_id=submenu.id, dish_id=uuid.uuid4())
+        resp = await client.get(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND
@@ -86,13 +100,15 @@ class TestDishesRoutes:
     @pytest.mark.usefixtures('dish')
     async def test_get_list_dishes(
             self,
-            dishes_url: str,
+            menu: Menu,
+            submenu: Submenu,
             client: AsyncClient
     ) -> None:
         """
         Проверка роута для вывода списка блюд
         """
-        resp = await client.get(dishes_url)
+        url = app.url_path_for('get_dishes_list', menu_id=menu.id, submenu_id=submenu.id)
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
@@ -102,14 +118,17 @@ class TestDishesRoutes:
 
     async def test_update_dish(
             self,
-            dish_url: str,
+            menu: Menu,
+            submenu: Submenu,
+            dish: Dish,
             dish_update_data: dict,
             client: AsyncClient
     ) -> None:
         """
         Проверка роута для частичного обновления блюда
         """
-        resp = await client.patch(dish_url, content=json.dumps(dish_update_data))
+        url = app.url_path_for('update_dish', menu_id=menu.id, submenu_id=submenu.id, dish_id=dish.id)
+        resp = await client.patch(url, content=json.dumps(dish_update_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -118,14 +137,16 @@ class TestDishesRoutes:
     @pytest.mark.fail
     async def test_update_dish_not_found(
             self,
-            dish_url_invalid: str,
+            menu: Menu,
+            submenu: Submenu,
             dish_update_data: dict,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что блюдо не найдено
         """
-        resp = await client.patch(dish_url_invalid, content=json.dumps(dish_update_data))
+        url = app.url_path_for('update_dish', menu_id=menu.id, submenu_id=submenu.id, dish_id=uuid.uuid4())
+        resp = await client.patch(url, content=json.dumps(dish_update_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND
@@ -134,27 +155,33 @@ class TestDishesRoutes:
     @pytest.mark.fail
     async def test_update_dish_validation_error(
             self,
-            dish_url: str,
+            menu: Menu,
+            submenu: Submenu,
+            dish: Dish,
             invalid_data: dict,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения о невалидном URL для вывода блюда
         """
-        resp = await client.patch(dish_url, content=json.dumps(invalid_data))
+        url = app.url_path_for('update_dish', menu_id=menu.id, submenu_id=submenu.id, dish_id=dish.id)
+        resp = await client.patch(url, content=json.dumps(invalid_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     async def test_delete_dish(
             self,
-            dish_url: str,
+            menu: Menu,
+            submenu: Submenu,
+            dish: Dish,
             client: AsyncClient
     ) -> None:
         """
         Проверка роута для удаления блюда
         """
-        resp = await client.delete(dish_url)
+        url = app.url_path_for('update_dish', menu_id=menu.id, submenu_id=submenu.id, dish_id=dish.id)
+        resp = await client.delete(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -163,13 +190,15 @@ class TestDishesRoutes:
     @pytest.mark.fail
     async def test_delete_dish_not_found(
             self,
-            dish_url_invalid: str,
+            menu: Menu,
+            submenu: Submenu,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что удаляемое блюдо не найдено
         """
-        resp = await client.delete(dish_url_invalid)
+        url = app.url_path_for('update_dish', menu_id=menu.id, submenu_id=submenu.id, dish_id=uuid.uuid4())
+        resp = await client.delete(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND

@@ -3,6 +3,7 @@ from http import HTTPStatus
 import pytest
 from httpx import AsyncClient
 
+from src.main import app
 from src.models.menu import Menu
 from src.models.submenu import Submenu
 from src.schemas.dish import DishOutSchema
@@ -83,7 +84,9 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для создания нового меню
         """
-        resp = await client.post('/api/v1/menus', json=new_menu_data)
+        url = app.url_path_for('create_menu')
+
+        resp = await client.post(url, json=new_menu_data)
         resp_json = resp.json()
 
         TestCheckDishesAndSubmenusCount.__menu_id = resp_json['id']
@@ -100,11 +103,11 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для создания нового подменю
         """
-        resp = await client.post(
-            f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}/submenus',
-            json=new_submenu_data
-        )
+        url = app.url_path_for('create_submenu', menu_id=TestCheckDishesAndSubmenusCount.__menu_id)
+
+        resp = await client.post(url, json=new_submenu_data)
         resp_json = resp.json()
+
         TestCheckDishesAndSubmenusCount.__submenu_id = resp_json['id']
 
         assert resp
@@ -119,11 +122,14 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для создания нового блюда
         """
-        resp = await client.post(
-            f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}/submenus/'
-            f'{TestCheckDishesAndSubmenusCount.__submenu_id}/dishes',
-            json=new_first_dish_data
+        url = app.url_path_for(
+            'create_dish',
+            menu_id=TestCheckDishesAndSubmenusCount.__menu_id,
+            submenu_id=TestCheckDishesAndSubmenusCount.__submenu_id
         )
+
+        resp = await client.post(url, json=new_first_dish_data)
+
         resp_json = resp.json()
         TestCheckDishesAndSubmenusCount.__first_dish_id = resp_json['id']
 
@@ -139,11 +145,14 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для создания нового блюда
         """
-        resp = await client.post(
-            f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}/submenus/'
-            f'{TestCheckDishesAndSubmenusCount.__submenu_id}/dishes',
-            json=new_second_dish_data
+        url = app.url_path_for(
+            'create_dish',
+            menu_id=TestCheckDishesAndSubmenusCount.__menu_id,
+            submenu_id=TestCheckDishesAndSubmenusCount.__submenu_id
         )
+
+        resp = await client.post(url, json=new_second_dish_data)
+
         resp_json = resp.json()
         TestCheckDishesAndSubmenusCount.__second_dish_id = resp_json['id']
 
@@ -158,7 +167,9 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для вывода меню по id
         """
-        resp = await client.get(f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}')
+        url = app.url_path_for('get_menu', menu_id=TestCheckDishesAndSubmenusCount.__menu_id)
+
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
@@ -174,10 +185,13 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для вывода подменю по id
         """
-        resp = await client.get(
-            f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}/submenus/'
-            f'{TestCheckDishesAndSubmenusCount.__submenu_id}'
+        url = app.url_path_for(
+            'get_submenu',
+            menu_id=TestCheckDishesAndSubmenusCount.__menu_id,
+            submenu_id=TestCheckDishesAndSubmenusCount.__submenu_id
         )
+
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
@@ -192,10 +206,13 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для удаления подменю
         """
-        resp = await client.delete(
-            f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}/submenus/'
-            f'{TestCheckDishesAndSubmenusCount.__submenu_id}'
+        url = app.url_path_for(
+            'delete_submenu',
+            menu_id=TestCheckDishesAndSubmenusCount.__menu_id,
+            submenu_id=TestCheckDishesAndSubmenusCount.__submenu_id
         )
+
+        resp = await client.delete(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -208,9 +225,9 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для вывода списка подменю
         """
-        resp = await client.get(
-            f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}/submenus'
-        )
+        url = app.url_path_for('get_submenus_list', menu_id=TestCheckDishesAndSubmenusCount.__menu_id)
+
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
@@ -225,10 +242,13 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для вывода списка блюд
         """
-        resp = await client.get(
-            f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}/submenus/'
-            f'{TestCheckDishesAndSubmenusCount.__submenu_id}/dishes',
+        url = app.url_path_for(
+            'get_dishes_list',
+            menu_id=TestCheckDishesAndSubmenusCount.__menu_id,
+            submenu_id=TestCheckDishesAndSubmenusCount.__submenu_id
         )
+
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
@@ -243,7 +263,9 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для вывода меню по id
         """
-        resp = await client.get(f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}')
+        url = app.url_path_for('get_menu', menu_id=TestCheckDishesAndSubmenusCount.__menu_id)
+
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
@@ -259,7 +281,8 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для удаления меню
         """
-        resp = await client.delete(f'/api/v1/menus/{TestCheckDishesAndSubmenusCount.__menu_id}')
+        url = app.url_path_for('delete_menu', menu_id=TestCheckDishesAndSubmenusCount.__menu_id)
+        resp = await client.delete(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -272,7 +295,9 @@ class TestCheckDishesAndSubmenusCount:
         """
         Проверка роута для вывода списка меню
         """
-        resp = await client.get('/api/v1/menus')
+        url = app.url_path_for('get_menu_list')
+
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
