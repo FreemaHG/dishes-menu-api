@@ -21,9 +21,11 @@ services:
     redis_test:
       image: redis:7.2
       container_name: test_redis
-      command: --port ${REDIS_PORT:?err}
+      command: --port 6379
       expose:
-        - ${REDIS_PORT:?err}
+        - 6379
+      ports:
+        - 6379:6379
 
     postgres:
       image: postgres:15.1-alpine

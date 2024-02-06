@@ -1,9 +1,12 @@
 import json
+import uuid
 from http import HTTPStatus
 
 import pytest
 from httpx import AsyncClient
 
+from src.main import app
+from src.models.menu import Menu
 from src.schemas.base import BaseInSchema
 from src.schemas.menu import MenuOutSchema
 from src.schemas.response import ResponseForDeleteSchema, ResponseSchema
@@ -17,14 +20,14 @@ class TestMenusRoutes:
 
     async def test_create_menu(
             self,
-            menus_url: str,
             client: AsyncClient,
             menu_schema: BaseInSchema
     ) -> None:
         """
         Проверка роута для создания нового меню
         """
-        resp = await client.post(menus_url, json=menu_schema.model_dump())
+        url = app.url_path_for('create_menu')
+        resp = await client.post(url, json=menu_schema.model_dump())
 
         assert resp
         assert resp.status_code == HTTPStatus.CREATED
@@ -33,27 +36,28 @@ class TestMenusRoutes:
     @pytest.mark.fail
     async def test_create_menu_fail(
             self,
-            menus_url: str,
             client: AsyncClient,
             invalid_data: dict
     ) -> None:
         """
         Проверка ответа при создании меню при невалидных данных
         """
-        resp = await client.post(menus_url, content=json.dumps(invalid_data))
+        url = app.url_path_for('create_menu')
+        resp = await client.post(url, content=json.dumps(invalid_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     async def test_get_menu(
             self,
-            menu_url: str,
+            menu: Menu,
             client: AsyncClient
     ) -> None:
         """
-        Проверка роута для вывода меню по id
+        Проверка роута для вывода меню по id (через reverse())
         """
-        resp = await client.get(menu_url)
+        url = app.url_path_for('get_menu', menu_id=menu.id)
+        resp = await client.get(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -62,13 +66,13 @@ class TestMenusRoutes:
     @pytest.mark.fail
     async def test_get_menu_not_found(
             self,
-            menu_url_invalid: str,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что меню не найдено
         """
-        resp = await client.get(menu_url_invalid)
+        url = app.url_path_for('get_menu', menu_id=uuid.uuid4())
+        resp = await client.get(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND
@@ -77,13 +81,13 @@ class TestMenusRoutes:
     @pytest.mark.usefixtures('menu')
     async def test_get_list_menu(
             self,
-            menus_url: str,
             client: AsyncClient
     ) -> None:
         """
         Проверка роута для вывода списка меню
         """
-        resp = await client.get(menus_url)
+        url = app.url_path_for('get_menu_list')
+        resp = await client.get(url)
         resp_json = resp.json()
 
         assert resp
@@ -93,14 +97,15 @@ class TestMenusRoutes:
 
     async def test_update_menu(
             self,
-            menu_url: str,
+            menu: Menu,
             menu_update_data: dict,
             client: AsyncClient
     ) -> None:
         """
         Проверка роута для частичного обновления меню
         """
-        resp = await client.patch(menu_url, content=json.dumps(menu_update_data))
+        url = app.url_path_for('update_menu', menu_id=menu.id)
+        resp = await client.patch(url, content=json.dumps(menu_update_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -109,14 +114,14 @@ class TestMenusRoutes:
     @pytest.mark.fail
     async def test_update_menu_not_found(
             self,
-            menu_url_invalid: str,
             menu_update_data: dict,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что меню не найдено
         """
-        resp = await client.patch(menu_url_invalid, content=json.dumps(menu_update_data))
+        url = app.url_path_for('update_menu', menu_id=uuid.uuid4())
+        resp = await client.patch(url, content=json.dumps(menu_update_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND
@@ -125,27 +130,29 @@ class TestMenusRoutes:
     @pytest.mark.fail
     async def test_update_menu_validation_error(
             self,
-            menu_url: str,
+            menu: Menu,
             invalid_data: dict,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения о невалидном URL для вывода меню
         """
-        resp = await client.patch(menu_url, content=json.dumps(invalid_data))
+        url = app.url_path_for('update_menu', menu_id=menu.id)
+        resp = await client.patch(url, content=json.dumps(invalid_data))
 
         assert resp
         assert resp.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
     async def test_delete_menu(
             self,
-            menu_url: str,
+            menu: Menu,
             client: AsyncClient
     ) -> None:
         """
         Проверка роута для удаления меню
         """
-        resp = await client.delete(menu_url)
+        url = app.url_path_for('delete_menu', menu_id=menu.id)
+        resp = await client.delete(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.OK
@@ -154,13 +161,13 @@ class TestMenusRoutes:
     @pytest.mark.fail
     async def test_delete_menu_not_found(
             self,
-            menu_url_invalid: str,
             client: AsyncClient
     ) -> None:
         """
         Проверка вывода сообщения, что удаляемое меню не найдено
         """
-        resp = await client.delete(menu_url_invalid)
+        url = app.url_path_for('delete_menu', menu_id=uuid.uuid4())
+        resp = await client.delete(url)
 
         assert resp
         assert resp.status_code == HTTPStatus.NOT_FOUND

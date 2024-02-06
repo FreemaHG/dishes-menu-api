@@ -73,11 +73,11 @@
 
 2. Собираем контейнеры и запускаем тесты:
    ```
-   docker-compose -f docker-compose-tests.yml up -d && docker logs -t -f test_api && docker-compose down
+   docker-compose -f docker-compose-tests.yml up -d && docker logs -t -f test_api && docker-compose down -v
    ```
 
-   **Примечание**: в приложении реализована функция аналог reverse() в Django (см. src/utils/reverse).
-   Функция используется в тесте - tests/unit/test_reverse.py
+   **Примечание**: в приложении реализована функция аналог reverse() в Django,
+которая используется при тестировании роутов.
 
 
    Проверка:
