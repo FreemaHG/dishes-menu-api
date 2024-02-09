@@ -47,7 +47,7 @@ class MenuRepository:
         return str(res.inserted_primary_key[0])
 
     @classmethod
-    async def get(cls, menu_id: str, session: AsyncSession) -> Menu | None:
+    async def get(cls, menu_id: str, session: AsyncSession) -> Menu:
         """
         Метод возвращает данные по меню из БД по переданному id
         :param menu_id: id меню для поиска в БД

@@ -53,7 +53,7 @@ class SubmenuRepository:
         return str(res.inserted_primary_key[0])
 
     @classmethod
-    async def get(cls, submenu_id: str, session: AsyncSession) -> Submenu | None:
+    async def get(cls, submenu_id: str, session: AsyncSession) -> Submenu:
         """
         Метод возвращает данные по подменю из БД по переданному id
         :param submenu_id: id подменю для поиска в БД
