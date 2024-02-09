@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Union
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_async_session
@@ -45,12 +45,18 @@ async def get_dishes_list(
 async def create_dish(
     submenu_id: UUID,
     new_dish: DishInSchema,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для добавления блюда
     """
-    dish = await DishService.create(submenu_id=str(submenu_id), new_dish=new_dish, session=session)
+    dish = await DishService.create(
+        submenu_id=str(submenu_id),
+        new_dish=new_dish,
+        background_tasks=background_tasks,
+        session=session
+    )
 
     if not dish:
         raise CustomApiException(
@@ -94,12 +100,18 @@ async def get_dish(
 async def update_dish(
     dish_id: UUID,
     data: DishInOptionalSchema,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для обновления блюда по id
     """
-    updated_dish = await DishService.update(dish_id=str(dish_id), data=data, session=session)
+    updated_dish = await DishService.update(
+        dish_id=str(dish_id),
+        data=data,
+        background_tasks=background_tasks,
+        session=session
+    )
 
     if not updated_dish:
         raise CustomApiException(
@@ -119,12 +131,13 @@ async def update_dish(
 )
 async def delete_dish(
     dish_id: UUID,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роят для удаления блюда по id
     """
-    res = await DishService.delete(dish_id=str(dish_id), session=session)
+    res = await DishService.delete(dish_id=str(dish_id), background_tasks=background_tasks, session=session)
 
     if not res:
         raise CustomApiException(

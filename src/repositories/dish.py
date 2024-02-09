@@ -48,7 +48,7 @@ class DishRepository:
         return dish
 
     @classmethod
-    async def get(cls, dish_id: str, session: AsyncSession) -> Dish | None:
+    async def get(cls, dish_id: str, session: AsyncSession) -> Dish:
         """
         Метод возвращает блюдо из БД по переданному id
         :param dish_id: id блюда для поиска

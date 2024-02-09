@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Union
 from uuid import UUID
 
-from fastapi import Depends
+from fastapi import BackgroundTasks, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_async_session
@@ -46,12 +46,18 @@ async def get_submenus_list(
 async def create_submenu(
     menu_id: UUID,
     new_submenu: BaseInSchema,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для добавления подменю
     """
-    submenu = await SubmenuService.create(menu_id=str(menu_id), new_submenu=new_submenu, session=session)
+    submenu = await SubmenuService.create(
+        menu_id=str(menu_id),
+        new_submenu=new_submenu,
+        background_tasks=background_tasks,
+        session=session
+    )
 
     if not submenu:
         raise CustomApiException(
@@ -97,12 +103,18 @@ async def get_submenu(
 async def update_submenu(
     submenu_id: UUID,
     data: BaseInOptionalSchema,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для обновления подменю по id
     """
-    updated_submenu = await SubmenuService.update(submenu_id=str(submenu_id), data=data, session=session)
+    updated_submenu = await SubmenuService.update(
+        submenu_id=str(submenu_id),
+        data=data,
+        background_tasks=background_tasks,
+        session=session
+    )
 
     if not updated_submenu:
         raise CustomApiException(
@@ -122,12 +134,13 @@ async def update_submenu(
 )
 async def delete_submenu(
     submenu_id: UUID,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_async_session),
 ):
     """
     Роут для удаления подменю по id
     """
-    res = await SubmenuService.delete(submenu_id=str(submenu_id), session=session)
+    res = await SubmenuService.delete(submenu_id=str(submenu_id), background_tasks=background_tasks, session=session)
 
     if not res:
         raise CustomApiException(
