@@ -3,6 +3,7 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.menu import Menu
+from src.repositories.cache.all_data import AllDataCacheRepository
 from src.repositories.cache.menu import MenuCacheRepository, MenusListCacheRepository
 from src.repositories.menu import MenuRepository
 from src.schemas.base import BaseInOptionalSchema, BaseInSchema
@@ -54,6 +55,7 @@ class MenuService:
         menu = await MenuRepository.get(menu_id=menu_id, session=session)
 
         background_tasks.add_task(MenusListCacheRepository.delete_list)
+        background_tasks.add_task(AllDataCacheRepository.delete_data)
 
         return menu
 

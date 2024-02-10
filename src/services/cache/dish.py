@@ -1,6 +1,7 @@
 from src.models.dish import Dish
 from src.models.menu import Menu
 from src.models.submenu import Submenu
+from src.repositories.cache.all_data import AllDataCacheRepository
 from src.repositories.cache.dish import DishCacheRepository, DishesListCacheRepository
 from src.services.cache.menu import DeleteCacheMenuService
 from src.services.cache.submenu import DeleteCacheSubmenuService
@@ -20,6 +21,7 @@ class DeleteCacheDishService:
         """
         DishesListCacheRepository.delete_list(submenu_id=dish.submenu_id)
         DishCacheRepository.delete(dish_id=dish.id)
+        AllDataCacheRepository.delete_data()
 
 
 class CascadeDeleteCacheDishService(DeleteCacheDishService):
