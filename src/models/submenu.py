@@ -21,16 +21,28 @@ class Submenu(BaseABC):
     @hybrid_property
     def dishes_count(self) -> int:
         """
-        Кол-во блюд в подменю
+        Подсчет кол-ва блюд в подменю
+        :return: кол-во блюд в подменю
         """
         return len(self.dishes)
 
-    def as_dict(self):
+    def as_dict(self) -> dict:
         """
         Преобразование модели в словарь (для кэширования в Redis)
+        :return: словарь с данными
         """
         model_dict = super().as_dict()
         model_dict['menu_id'] = str(model_dict['menu_id'])
         model_dict['dishes_count'] = self.dishes_count
 
         return model_dict
+
+    def as_all_dict(self) -> dict:
+        """
+        Преобразование модели в словарь (для кэширования в Redis) с данными о вложенных блюдах
+        :return: словарь с данными
+        """
+        data = self.as_dict()
+        data['dishes'] = [dish.as_dict() for dish in self.dishes]
+
+        return data

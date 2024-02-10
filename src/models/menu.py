@@ -40,3 +40,13 @@ class Menu(BaseABC):
         model_dict['dishes_count'] = self.dishes_count
 
         return model_dict
+
+    def as_all_dict(self) -> dict:
+        """
+        Преобразование модели в словарь (для кэширования в Redis) с данными о вложенных подменю
+        :return: словарь с данными
+        """
+        data = self.as_dict()
+        data['submenus'] = [submenu.as_all_dict() for submenu in self.submenus]
+
+        return data
