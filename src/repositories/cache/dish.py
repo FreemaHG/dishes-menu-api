@@ -2,7 +2,6 @@ from fastapi_redis import redis_client
 from loguru import logger
 
 from src.models.dish import Dish
-from src.redis import redis
 
 
 class DishesListCacheRepository:
@@ -35,13 +34,13 @@ class DishesListCacheRepository:
         logger.info('Список блюд кэширован')
 
     @classmethod
-    def delete_list(cls, submenu_id: str) -> None:
+    async def delete_list(cls, submenu_id: str) -> None:
         """
         Метод очищает кэш со списком блюд
         :param submenu_id: id подменю, к которому относятся блюда
         :return: None
         """
-        redis.delete(cls.__dishes_list.format(submenu_id=submenu_id))
+        await redis_client.delete(cls.__dishes_list.format(submenu_id=submenu_id))
         logger.info('Кэш списка блюд очищен')
 
 
@@ -71,11 +70,11 @@ class DishCacheRepository:
         logger.info('Данные о блюде кэшированы')
 
     @classmethod
-    def delete(cls, dish_id: str) -> None:
+    async def delete(cls, dish_id: str) -> None:
         """
         Метод очищает кэш с данными о блюде
         :param dish_id: id блюда
         :return: None
         """
-        redis.delete(cls.__dish_id.format(dish_id=dish_id))
+        await redis_client.delete(cls.__dish_id.format(dish_id=dish_id))
         logger.info('Кэш блюда очищен')

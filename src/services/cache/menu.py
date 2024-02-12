@@ -14,15 +14,15 @@ class DeleteCacheMenuService:
     """
 
     @classmethod
-    def delete_menu(cls, menu: Menu) -> None:
+    async def delete_menu(cls, menu: Menu) -> None:
         """
         Метод очищает кэш списка меню и конкретного меню
         :param menu: удаляемое меню
         :return: None
         """
-        MenusListCacheRepository.delete_list()
-        MenuCacheRepository.delete(menu_id=menu.id)
-        AllDataCacheRepository.delete_data()
+        await MenusListCacheRepository.delete_list()
+        await MenuCacheRepository.delete(menu_id=menu.id)
+        await AllDataCacheRepository.delete_data()
 
 
 class CascadeDeleteCacheMenuService(DeleteCacheMenuService):
@@ -31,22 +31,22 @@ class CascadeDeleteCacheMenuService(DeleteCacheMenuService):
     """
 
     @classmethod
-    def delete_menu(cls, menu: Menu) -> None:
+    async def delete_menu(cls, menu: Menu) -> None:
         """
         Метод каскадно очищает кэш для всех подменю и блюд, относящихся к удаляемому меню
         :param menu: удаляемое меню
         :return: None
         """
-        super().delete_menu(menu=menu)
+        await super().delete_menu(menu=menu)
 
         # Очистка кэша списка подменю и всех подменю, которые относятся к удаляемому меню
-        SubmenusListCacheRepository.delete_list(menu_id=menu.id)
+        await SubmenusListCacheRepository.delete_list(menu_id=menu.id)
 
         for submenu in menu.submenus:
-            SubmenuCacheRepository.delete(submenu_id=submenu.id)
+            await SubmenuCacheRepository.delete(submenu_id=submenu.id)
 
             # Очистка кэша списка блюд и всех блюд, которые относятся к удаляемому подменю
-            DishesListCacheRepository.delete_list(submenu_id=submenu.id)
+            await DishesListCacheRepository.delete_list(submenu_id=submenu.id)
 
             for dish in submenu.dishes:
-                DishCacheRepository.delete(dish_id=dish.id)
+                await DishCacheRepository.delete(dish_id=dish.id)

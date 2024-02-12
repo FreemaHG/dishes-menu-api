@@ -5,13 +5,12 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.main import app
 from src.models.dish import Dish
 from src.models.menu import Menu
 from src.models.submenu import Submenu
 from src.schemas.base import BaseInOptionalSchema, BaseInSchema
 from src.schemas.dish import DishInOptionalSchema, DishInSchema
-from tests.database import Base, async_session_maker, engine_test
+from tests.database import Base, app, async_session_maker, engine_test
 
 
 @pytest.fixture(autouse=True, scope='session')

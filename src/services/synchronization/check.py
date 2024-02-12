@@ -81,9 +81,10 @@ class CheckDataService:
         time_change_file = await cls._get_change_time(file=file)
         last_change_time = await LastChangeFileRepository.get()
 
-        if await cls._comparison_time_change(file_time=time_change_file, last_time=last_change_time):
-            logger.debug('Время изменения файла совпадает, обновление БД не требуется')
-            return False
+        if last_change_time:
+            if await cls._comparison_time_change(file_time=time_change_file, last_time=last_change_time):
+                logger.debug('Время изменения файла совпадает, обновление БД не требуется')
+                return False
 
         data = await cls._get_parsed_data(file=file)
 

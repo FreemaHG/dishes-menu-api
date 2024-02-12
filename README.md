@@ -2,6 +2,7 @@
 
 Проект представляет собой API по работе с меню ресторана, все CRUD операции. Написан на фреймворке FastAPI
 с использованием PostgreSQL в качестве основной БД и Redis для кэширования.
+Для автоматической синхронизации БД с exel-файлом с меню используется планировщик Celery и брокер RabbitMQ.
 
 ## Оглавление
 1. [Описание](#Описание)
@@ -31,6 +32,9 @@
 * Во время выдачи списка меню, для каждого меню добавлять кол-во подменю и блюд в этом меню.
 * Во время выдачи списка подменю, для каждого подменю добавлять кол-во блюд в этом подменю.
 
+При помощи планировщика задач Celery каждые 15 секунд идет проверка локального exel-файла (src/admin/Menu.xlsx)
+на изменения. При наличии изменений БД автоматически синхронизируется с файлом.
+
 ## Инструменты
 * **Python** (3.10);
 * **FastAPI** (asynchronous Web Framework);
@@ -39,6 +43,8 @@
 * **Alembic** (database migrations made easy);
 * **Pydantic** (data verification);
 * **Redis** (caching);
+* **Celery** (database synchronization);
+* **RabbitMQ** (message broker for celery);
 * **Pytest** (tests);
 * **Docker Compose**.
 
@@ -54,7 +60,7 @@
 2. Переименовываем файл "**.env.prod.template**" в "**.env**".
 
 
-3. Собираем и запускаем контейнеры с API, PostgreSQL и Redis:
+3. Собираем и запускаем контейнеры:
    ```
    docker-compose up -d
    ```
@@ -71,9 +77,11 @@
 
 ### Test
 
-2. Собираем контейнеры и запускаем тесты:
+2. Переименовываем файл "**.env.test.template**" в "**.env**".
+
+3. Собираем контейнеры и запускаем тесты:
    ```
-   docker-compose -f docker-compose-tests.yml up -d && docker logs -t -f test_api && docker-compose down -v
+   docker-compose -f docker-compose-tests.yml up -d && docker logs -t -f test_api
    ```
 
    **Примечание**: в приложении реализована функция аналог reverse() в Django,
@@ -84,6 +92,11 @@
       ```
       pytest -v tests/unit/test_reverse.py::TestReverse
       ```
+
+3. Остановка и удаление контейнеров:
+   ```
+   docker-compose down
+   ```
 
 ### Dev
 

@@ -13,15 +13,15 @@ class DeleteCacheDishService:
     """
 
     @classmethod
-    def delete_dish(cls, dish: Dish) -> None:
+    async def delete_dish(cls, dish: Dish) -> None:
         """
         Метод очищает кэш списка блюд и конкретного блюда
         :param menu: удаляемое блюдо
         :return: None
         """
-        DishesListCacheRepository.delete_list(submenu_id=dish.submenu_id)
-        DishCacheRepository.delete(dish_id=dish.id)
-        AllDataCacheRepository.delete_data()
+        await DishesListCacheRepository.delete_list(submenu_id=dish.submenu_id)
+        await DishCacheRepository.delete(dish_id=dish.id)
+        await AllDataCacheRepository.delete_data()
 
 
 class CascadeDeleteCacheDishService(DeleteCacheDishService):
@@ -30,7 +30,7 @@ class CascadeDeleteCacheDishService(DeleteCacheDishService):
     """
 
     @classmethod
-    def delete_dish(cls, dish: Dish, menu: Menu | None = None, submenu: Submenu | None = None) -> None:
+    async def delete_dish(cls, dish: Dish, menu: Menu | None = None, submenu: Submenu | None = None) -> None:
         """
         Метод для каскадного удаления кэша связанных записей меню и подменю при удалении блюда
         :param dish: удаляемое блюдо
@@ -38,8 +38,8 @@ class CascadeDeleteCacheDishService(DeleteCacheDishService):
         :param menu: меню, в котором находится блюдо
         :return:
         """
-        super().delete_dish(dish=dish)
+        await super().delete_dish(dish=dish)
 
         if menu and submenu:
-            DeleteCacheSubmenuService.delete_submenu(submenu=submenu)
-            DeleteCacheMenuService.delete_menu(menu=menu)
+            await DeleteCacheSubmenuService.delete_submenu(submenu=submenu)
+            await DeleteCacheMenuService.delete_menu(menu=menu)
