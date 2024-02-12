@@ -2,7 +2,7 @@ version: "3.11"
 
 services:
 
-    api_test:
+    test_api:
       build:
         context: .
         dockerfile: Dockerfile-test
@@ -17,15 +17,6 @@ services:
       depends_on:
         postgres:
           condition: service_healthy
-
-    redis_test:
-      image: redis:7.2
-      container_name: test_redis
-      command: --port 6379
-      expose:
-        - 6379
-      ports:
-        - 6379:6379
 
     postgres:
       image: postgres:15.1-alpine

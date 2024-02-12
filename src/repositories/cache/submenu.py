@@ -2,7 +2,6 @@ from fastapi_redis import redis_client
 from loguru import logger
 
 from src.models.submenu import Submenu
-from src.redis import redis
 
 
 class SubmenusListCacheRepository:
@@ -35,13 +34,13 @@ class SubmenusListCacheRepository:
         logger.info('Список подменю кэширован')
 
     @classmethod
-    def delete_list(cls, menu_id: str) -> None:
+    async def delete_list(cls, menu_id: str) -> None:
         """
         Метод очищает кэш со списком подменю
         :param menu_id: id меню, к которому относится подменю
         :return: None
         """
-        redis.delete(cls.__submenus_list.format(menu_id=menu_id))
+        await redis_client.delete(cls.__submenus_list.format(menu_id=menu_id))
         logger.info('Кэш списка подменю очищен')
 
 
@@ -71,11 +70,11 @@ class SubmenuCacheRepository:
         logger.info('Данные о подменю кэшированы')
 
     @classmethod
-    def delete(cls, submenu_id: str) -> None:
+    async def delete(cls, submenu_id: str) -> None:
         """
         Метод очищает кэш с данными о подменю
         :param submenu_id: id подменю
         :return: None
         """
-        redis.delete(cls.__submenu_id.format(submenu_id=submenu_id))
+        await redis_client.delete(cls.__submenu_id.format(submenu_id=submenu_id))
         logger.info('Кэш подменю очищен')

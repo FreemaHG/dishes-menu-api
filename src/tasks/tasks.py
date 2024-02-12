@@ -27,8 +27,9 @@ def synchronization_menu():
         DataSynchronizationService.synchronization_db()
     )
 
-# Запуск планировщика задач, который будет периодически посылать задачу воркеру
-# celery -A src.tasks.tasks beat --loglevel=INFO
 
-# Запуск воркета, который будет непосредственно выполнять задачу
+# Запуск воркета, который будет непосредственно выполнять задачу (в новом терминале)
 # celery -A src.tasks.tasks worker --loglevel=INFO
+
+# Запуск планировщика задач, который будет периодически посылать задачу воркеру (в новом терминале)
+# celery -A src.tasks.tasks beat --loglevel=INFO

@@ -48,11 +48,11 @@ class AllDataService:
             menus = await MenuRepository.get_list(session=session)
 
             # Удалить кэш со всеми данными
-            AllDataCacheRepository.delete_data()
+            await AllDataCacheRepository.delete_data()
 
             # Удалить кэш каскадно для каждого меню, вложенного подменю и блюда
             for menu in menus:
-                CascadeDeleteCacheMenuService.delete_menu(menu=menu)
+                await CascadeDeleteCacheMenuService.delete_menu(menu=menu)
 
             # Удаление всех меню
             await MenuListRepository.delete_list(session=session)

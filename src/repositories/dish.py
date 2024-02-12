@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.dish import Dish
 from src.schemas.dish import DishInOptionalSchema, DishInSchema
+from src.schemas.parser.dish import DishParserSchema
 
 
 class DishRepository:
@@ -26,7 +27,7 @@ class DishRepository:
 
     @classmethod
     async def create(
-        cls, submenu_id: str, new_dish: DishInSchema, session: AsyncSession
+        cls, submenu_id: str, new_dish: DishInSchema | DishParserSchema, session: AsyncSession
     ) -> Dish:
         """
         Метод создает и возвращает новое блюдо из БД
@@ -35,12 +36,17 @@ class DishRepository:
         :param session: объект асинхронной сессии для запросов к БД
         :return: объект нового блюда
         """
+        try:
+            discount = new_dish.discount
+
+        except AttributeError:
+            discount = 0
 
         dish = Dish(
             title=new_dish.title,
             description=new_dish.description,
             price=new_dish.price,
-            discount=new_dish.discount,
+            discount=discount,
             submenu_id=submenu_id,
         )
 

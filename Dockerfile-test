@@ -16,5 +16,5 @@ COPY docker/test.sh /docker/test.sh
 
 RUN chmod a+x docker/*.sh
 
-# Иначе тесты не запустятся
+# Иначе тесты не запустятся!
 WORKDIR /tests

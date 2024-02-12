@@ -2,7 +2,6 @@ from fastapi_redis import redis_client
 from loguru import logger
 
 from src.models.menu import Menu
-from src.redis import redis
 
 
 class AllDataCacheRepository:
@@ -30,10 +29,10 @@ class AllDataCacheRepository:
         logger.info('Все данные кэшированы')
 
     @classmethod
-    def delete_data(cls) -> None:
+    async def delete_data(cls) -> None:
         """
         Метод очищает кэш со списком меню
         :return: None
         """
-        redis.delete(cls.__all_data)
+        await redis_client.delete(cls.__all_data)
         logger.info('Кэш со всеми данными очищен')

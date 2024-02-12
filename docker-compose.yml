@@ -14,43 +14,11 @@ services:
       ports:
         - 8000:8000
       command: [ "/docker/api.sh" ]
-      # TODO Добавить проверку redis, rabbitmq, Celery и Flower
       depends_on:
         postgres:
           condition: service_healthy
-
-    redis:
-      image: redis:7.2
-      container_name: redis
-      restart: always
-      command: --port 6379
-      expose:
-        - 6379
-      ports:
-        - 6379:6379
-
-    # TODO Добавить Celery
-    # TODO Добавить Flower
-
-    rabbitmq:
-      image: rabbitmq:3.10.7-management
-      container_name: rabbitmq
-      hostname: rabbitmq
-      restart: always
-      expose:
-        - 15672
-        - 5672
-      ports:
-        - 15672:15672
-        - 5672:5672
-      environment:
-        - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:?err}
-        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS:?err}
-        # Увеличиваем свободное место для записи до 2 ГБ
-        # Устанавливаем уровень логирования - error
-        - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
-      volumes:
-        - rabbitmq:/var/lib/rabbitmq
+        cache:
+          condition: service_healthy
 
     postgres:
       image: postgres:15.1-alpine
@@ -73,6 +41,69 @@ services:
         timeout: 5s
         retries: 5
 
+    cache:
+      image: redis:7.2
+      container_name: cache
+      restart: always
+      command: --port 6379
+      expose:
+        - 6379
+      ports:
+        - 6379:6379
+      volumes:
+        - cache:/data
+      healthcheck:
+        test: [ "CMD", "redis-cli", "ping" ]
+        interval: 1s
+        timeout: 3s
+        retries: 30
+
+    # Воркер
+    celery_worker:
+      build:
+        context: .
+      env_file:
+        - .env
+      container_name: celery_worker
+      command: [ "/docker/celery.sh", "worker" ]
+      depends_on:
+        - cache
+        - api
+        - rabbitmq
+
+    # Планировщик задач
+    celery_beat:
+      build:
+        context: .
+      env_file:
+        - .env
+      container_name: celery_beat
+      command: [ "/docker/celery.sh", "beat" ]
+      depends_on:
+        - rabbitmq
+        - celery_worker
+
+    rabbitmq:
+      image: rabbitmq:3.10.7-management
+      container_name: rabbitmq
+      hostname: rabbitmq
+      restart: always
+      expose:
+        - 15672
+        - 5672
+      ports:
+        - 15672:15672
+        - 5672:5672
+      environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:?err}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS:?err}
+        # Увеличиваем свободное место для записи до 2 ГБ
+        # Устанавливаем уровень логирования - error
+        - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+      volumes:
+        - rabbitmq:/var/lib/rabbitmq
+
 volumes:
   postgres_db:
+  cache:
   rabbitmq:

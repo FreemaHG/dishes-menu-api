@@ -112,6 +112,6 @@ class DataSynchronizationService:
             await LastChangeFileRepository.set(timestamp_data=data['time_change_file'])
 
 
-# TODO ДЛЯ ПРОВЕРКИ
+# Ручная проверка алгоритма синхронизации данных
 if __name__ == '__main__':
     asyncio.run(DataSynchronizationService.synchronization_db())
