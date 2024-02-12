@@ -17,7 +17,7 @@ class BaseABC(Base):
     id: Mapped[UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
-    title: Mapped[str] = mapped_column(String(280), unique=True)
+    title: Mapped[str] = mapped_column(String(280))
     description: Mapped[str] = mapped_column(Text)
 
     def as_dict(self) -> dict:

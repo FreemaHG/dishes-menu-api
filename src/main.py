@@ -5,7 +5,6 @@ from src.utils.exceptions import CustomApiException, custom_api_exception_handle
 
 app = FastAPI(title='DishesApi', debug=True)
 
-
 # Регистрация URL
 register_routers(app)
 

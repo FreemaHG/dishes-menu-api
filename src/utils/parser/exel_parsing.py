@@ -1,6 +1,3 @@
-import json
-import os
-
 from loguru import logger
 from openpyxl import load_workbook
 from openpyxl.reader.excel import ExcelReader
@@ -11,12 +8,14 @@ class ParseExel:
     Парсер exel-файла с данными о меню, подменю и блюдах
     """
 
-    __FILE = 'Menu.xlsx'
-    __PATH = os.path.abspath(os.path.join('..', '..', 'admin', __FILE))
     __DATA: dict = {}
 
     @classmethod
-    def _open_file(cls, file: str = __PATH) -> ExcelReader | bool:
+    def new_dict(cls):
+        cls.__DATA = {}
+
+    @classmethod
+    def _open_file(cls, file: str) -> ExcelReader | bool:
         """
         Метод открывает и возвращает объект exel-файла
         :param file: директория для открытия файла
@@ -88,21 +87,21 @@ class ParseExel:
         submenus_list = []
 
         for line in range(row + 1, sheet.max_row + 1):
-            value = sheet[f'B{line}'].value
+            num_submenu = sheet[f'B{line}'].value
 
-            if isinstance(value, int):
+            if isinstance(num_submenu, int):
                 dishes = cls._parse_dishes(sheet=sheet, row=line + 1)
 
                 submenus_list.append(
                     {
-                        'number': value,
+                        'number': num_submenu,
                         'title': sheet[f'C{line}'].value,
                         'description': sheet[f'D{line}'].value,
                         'dishes': dishes
                     }
                 )
 
-            elif value is None:
+            elif num_submenu is None:
                 continue
 
             else:
@@ -136,25 +135,18 @@ class ParseExel:
                 )
 
     @classmethod
-    def parse_data(cls) -> dict:
+    def parse_data(cls, file: str) -> dict:
         """
         Метод для парсинга данных о меню с exel-файла
+        :param file: файл для парсинга данных
         :return: словарь с данными
         """
-        sheet = cls._open_file()
+        cls.new_dict()
+        sheet = cls._open_file(file=file)
 
         if sheet and cls._check_row(sheet=sheet):
             cls._parse_menu(sheet=sheet)
-
         else:
             logger.warning('Нет данных для обновления меню')
 
         return cls.__DATA
-
-
-parsed_data = ParseExel.parse_data()
-# TODO Если данных нет, то вызвать методы сервисов для удаления меню (автоматической очистки БД и кэша)
-
-# TODO Для наглядности (удалить после реализации синхронизации БД)
-with open('menu_data.json', 'w') as file:
-    json.dump(parsed_data, file, ensure_ascii=False)
