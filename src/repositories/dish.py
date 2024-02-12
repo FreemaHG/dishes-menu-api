@@ -35,10 +35,12 @@ class DishRepository:
         :param session: объект асинхронной сессии для запросов к БД
         :return: объект нового блюда
         """
+
         dish = Dish(
             title=new_dish.title,
             description=new_dish.description,
             price=new_dish.price,
+            discount=new_dish.discount,
             submenu_id=submenu_id,
         )
 

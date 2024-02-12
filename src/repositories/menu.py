@@ -97,3 +97,24 @@ class MenuRepository:
         # а не через delete().where()
         await session.delete(delete_menu)
         await session.commit()
+
+
+class MenuListRepository:
+    """
+    Получение списка меню и удаление всех меню из БД
+    """
+
+    # TODO Переместить метод вывода списка сюда и проверить везде корректную работы
+
+    @classmethod
+    async def delete_list(cls, session: AsyncSession) -> None:
+        """
+        Метод удаляет из БД все меню
+        :param session: объект асинхронной сессии для запросов к БД
+        :return: None
+        """
+        menus = await MenuRepository.get_list(session=session)
+
+        for menu in menus:
+            await session.delete(menu)
+            await session.commit()

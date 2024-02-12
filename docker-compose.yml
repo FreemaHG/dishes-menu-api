@@ -14,6 +14,7 @@ services:
       ports:
         - 8000:8000
       command: [ "/docker/api.sh" ]
+      # TODO Добавить проверку redis, rabbitmq, Celery и Flower
       depends_on:
         postgres:
           condition: service_healthy
@@ -27,6 +28,29 @@ services:
         - 6379
       ports:
         - 6379:6379
+
+    # TODO Добавить Celery
+    # TODO Добавить Flower
+
+    rabbitmq:
+      image: rabbitmq:3.10.7-management
+      container_name: rabbitmq
+      hostname: rabbitmq
+      restart: always
+      expose:
+        - 15672
+        - 5672
+      ports:
+        - 15672:15672
+        - 5672:5672
+      environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER:?err}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASS:?err}
+        # Увеличиваем свободное место для записи до 2 ГБ
+        # Устанавливаем уровень логирования - error
+        - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+      volumes:
+        - rabbitmq:/var/lib/rabbitmq
 
     postgres:
       image: postgres:15.1-alpine
@@ -51,3 +75,4 @@ services:
 
 volumes:
   postgres_db:
+  rabbitmq:
