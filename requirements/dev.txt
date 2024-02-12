@@ -1,2 +1,2 @@
--r base.txt
+-r test.txt
 pre-commit==3.6.0

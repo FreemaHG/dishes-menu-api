@@ -8,10 +8,12 @@
 1. [Описание](#Описание)
 2. [Инструменты](#Инструменты)
 3. [Сборка](#Сборка)
-   1. [Prod](#Prod)
-   2. [Test](#Test)
-   3. [Dev](#Dev)
-      1. [Pre-commit хуки](#Pre-commit)
+   1. [Production](#Prod)
+   2. [Тестирование](#Test)
+   3. [Разработка](#Dev)
+      1. [Запуск тестов](#Тестирование)
+      2. [Планировщик задач Celery](#Celery)
+      3. [Pre-commit хуки](#Pre-commit)
 4. [Postman-тесты](#Postman-тесты)
 
 ## Описание
@@ -79,23 +81,25 @@
 
 2. Переименовываем файл "**.env.test.template**" в "**.env**".
 
-3. Собираем контейнеры и запускаем тесты:
+
+3. Запускаем контейнеры с тестовыми БД и Redis:
    ```
-   docker-compose -f docker-compose-tests.yml up -d && docker logs -t -f test_api
+   docker-compose -f docker-compose-tests.yml up -d test_postgres test_cache
+   ```
+
+4. Запускаем контейнер с тестами:
+
+   ```
+   docker-compose -f docker-compose-tests.yml up test_api
    ```
 
    **Примечание**: в приложении реализована функция аналог reverse() в Django,
 которая используется при тестировании роутов.
 
 
-   Проверка:
-      ```
-      pytest -v tests/unit/test_reverse.py::TestReverse
-      ```
-
-3. Остановка и удаление контейнеров:
+5. Удаление контейнеров:
    ```
-   docker-compose down
+   docker-compose -f docker-compose-tests.yml down
    ```
 
 ### Dev
@@ -105,20 +109,23 @@
 
 3. Создаем и активируем виртуальное окружение:
    ```
-   python3 -m venv venv
+   python3.10 -m venv venv
    ```
    ```
    source venc/bin/activate
    ```
+
+   **ВАЖНО**: для корректной работы пакета fastapi_redis необходим python **версии 3.10**!
+
 
 4. Устанавливаем зависимости:
    ```
    pip install -r requirements/dev.txt
    ```
 
-5. Собираем и запускаем контейнеры с PostgreSQL и Redis:
+5. Собираем и запускаем контейнер с PostgreSQL:
    ```
-   docker-compose up -d postgres redis
+   docker-compose up -d postgres
    ```
 
 6. Применяем миграции (создаем структуру БД):
@@ -136,10 +143,49 @@
    uvicorn src.main:app --reload
    ```
 
-9. Остановка и удаление контейнеров с PostgreSQL и Redis:
+9. Остановка и удаление контейнера с PostgreSQL:
    ```
-   docker-compose down postgres redis
+   docker-compose down postgres
    ```
+
+#### Тестирование
+
+1. Перед стартом тестов запускаем контейнер с тестовой БД:
+   ```
+   docker-compose -f docker-compose-tests.yml up -d test_postgres
+   ```
+
+2. Запуск тестов:
+   ```
+   pytest -v
+   ```
+
+2. Удаление контейнера с тестовой БД:
+   ```
+   docker-compose -f docker-compose-tests.yml down test_postgres
+   ```
+
+#### Celery
+
+1. Запускаем контейнер с RabbitMQ:
+   ```
+   docker-compose up -d rabbitmq
+   ```
+
+2. Запускаем воркер Celery:
+   ```
+   celery -A src.tasks.tasks worker --loglevel=INFO
+   ```
+
+3. В новом окне терминала запускаем планировщик задач Celery:
+   ```
+   celery -A src.tasks.tasks beat --loglevel=INFO
+   ```
+
+   Планировщик каждые 15 секунд проверяет файл scr/admin/Menu.xlsx и синхронизирует данные с БД в случае изменений.
+
+
+   **ВАЖНО**: не забываем запустить контейнер с PostgreSQL и выполнить миграции (создать структуру БД)!
 
 #### Pre-commit
 
@@ -183,6 +229,3 @@
 
 Радуемся успешно пройденным тестам.
 ![](/postman/6.png)
-
-
-[Текст ссылки](#твоё_название)
