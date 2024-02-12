@@ -26,10 +26,3 @@ def synchronization_menu():
     loop.run_until_complete(
         DataSynchronizationService.synchronization_db()
     )
-
-
-# Запуск воркета, который будет непосредственно выполнять задачу (в новом терминале)
-# celery -A src.tasks.tasks worker --loglevel=INFO
-
-# Запуск планировщика задач, который будет периодически посылать задачу воркеру (в новом терминале)
-# celery -A src.tasks.tasks beat --loglevel=INFO
